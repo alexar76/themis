@@ -1,0 +1,2664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>THEMIS — Admit. Or don’t. Before the catalogue.</title>
+<meta name="description" content="THEMIS is AIMarket’s publish-time admission gate: signed approve / review / reject for third-party agents from a bounded dossier. Not Metis (cognition). Not WARDEN (invoke-time firewall). Rebuild it with the five-language create-aimarket-agent mini-course."/>
+<meta name="author" content="AIMarket"/>
+<link rel="canonical" href="https://alexar76.github.io/themis/"/>
+<link rel="alternate" hreflang="en" href="https://alexar76.github.io/themis/?lang=en"/>
+<link rel="alternate" hreflang="ru" href="https://alexar76.github.io/themis/?lang=ru"/>
+<link rel="alternate" hreflang="es" href="https://alexar76.github.io/themis/?lang=es"/>
+<link rel="alternate" hreflang="fr" href="https://alexar76.github.io/themis/?lang=fr"/>
+<link rel="alternate" hreflang="zh" href="https://alexar76.github.io/themis/?lang=zh"/>
+<link rel="alternate" hreflang="x-default" href="https://alexar76.github.io/themis/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="THEMIS — admission before the catalogue"/>
+<meta property="og:description" content="Signed procurement gate for AI-agent supply chains. Interactive 3D gate · real signed verdicts · five-language mini-course."/>
+<meta property="og:url" content="https://alexar76.github.io/themis/"/>
+<meta property="og:image" content="https://raw.githubusercontent.com/alexar76/themis/main/docs/screenshots/hero.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="THEMIS — admission before the catalogue"/>
+<meta name="twitter:description" content="Signed approve / review / reject for third-party agents, before they reach the public catalogue."/>
+<meta name="twitter:image" content="https://raw.githubusercontent.com/alexar76/themis/main/docs/screenshots/hero.jpg"/>
+<meta name="theme-color" content="#06080c"/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2306080c'/%3E%3Cpath d='M8 22 L16 8 L24 22 Z' fill='none' stroke='%23c9a46a' stroke-width='2'/%3E%3Ccircle cx='16' cy='14' r='2' fill='%2366f7c5'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ─────────────────────────── tokens ─────────────────────────── */
+:root{
+  --void:#06080c; --void-2:#090d14; --panel:rgba(11,16,23,.62); --panel-2:rgba(8,12,18,.78);
+  --ink:#eef3f7; --ink-2:#c6d2de; --muted:#8b98a8; --faint:#5b6877;
+  --bronze:#c9a46a; --bronze-hi:#e6cd9c; --bronze-lo:#8a6a35;
+  --teal:#66f7c5; --teal-lo:#1d6b57;
+  --approve:#43e65a; --review:#ffcc33; --reject:#ff2d55;
+  --brd:rgba(201,164,106,.20); --brd-2:rgba(255,255,255,.06); --brd-hot:rgba(102,247,197,.42);
+  --head:"Syne",system-ui,-apple-system,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace;
+  --maxw:1180px; --r-s:10px; --r-m:16px; --r-l:22px;
+  --s1:6px; --s2:10px; --s3:16px; --s4:24px; --s5:36px; --s6:56px; --s7:84px;
+  --ease:cubic-bezier(.22,.68,.16,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--void);color:var(--ink);
+  font-family:var(--body);font-size:16px;line-height:1.6;letter-spacing:.002em;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
+}
+::selection{background:rgba(102,247,197,.24);color:#fff}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:4px}
+a{color:inherit}
+h1,h2,h3{text-wrap:balance}
+p{text-wrap:pretty}
+
+/* ───────────────────────── backdrop ───────────────────────── */
+#stars{position:fixed;inset:0;z-index:0;display:block}
+.nebula{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(58vw 46vw at 12% 4%,rgba(201,164,106,.15),transparent 60%),
+    radial-gradient(50vw 42vw at 90% 14%,rgba(102,247,197,.10),transparent 58%),
+    radial-gradient(64vw 52vw at 50% 108%,rgba(255,45,85,.055),transparent 58%)}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.20;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 240px 60px rgba(0,0,0,.8)}
+.wrap{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+/* ─────────────────────────── nav ─────────────────────────── */
+nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(16px) saturate(130%);
+  background:linear-gradient(180deg,rgba(6,8,12,.94),rgba(6,8,12,.44));border-bottom:1px solid var(--brd)}
+nav .row{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:62px;padding:8px 0}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--head);font-weight:800;
+  letter-spacing:.2em;font-size:15px;text-decoration:none;color:var(--ink)}
+.brand .pip{width:12px;height:12px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 34% 30%,#fff,var(--bronze) 46%,#5f451c);
+  box-shadow:0 0 18px rgba(201,164,106,.6);animation:pip 3s var(--ease) infinite}
+@keyframes pip{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.14);opacity:1}}
+.nav-links{display:flex;gap:2px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font:500 12px/1 var(--mono);letter-spacing:.07em;
+  padding:9px 11px;border-radius:8px;transition:color .2s var(--ease),background .2s var(--ease);white-space:nowrap}
+.nav-links a:hover{color:var(--teal);background:rgba(102,247,197,.06)}
+.nav-links a.on{color:var(--bronze-hi);background:rgba(201,164,106,.09)}
+.nav-links a.ext:after{content:"↗";margin-left:5px;opacity:.5;font-size:10px}
+.progress{position:absolute;left:0;bottom:-1px;height:2px;width:0;
+  background:linear-gradient(90deg,var(--bronze),var(--teal));box-shadow:0 0 12px rgba(102,247,197,.5);z-index:61}
+.langs-switch{display:flex;gap:2px;padding:3px;border:1px solid var(--brd);border-radius:9px;background:rgba(8,12,18,.6)}
+.langs-switch button{background:none;border:0;cursor:pointer;color:var(--faint);
+  font:600 10px/1 var(--mono);letter-spacing:.08em;padding:6px 7px;border-radius:6px;transition:.2s var(--ease)}
+.langs-switch button:hover{color:var(--teal)}
+.langs-switch button[aria-pressed=true]{background:rgba(201,164,106,.16);color:var(--bronze-hi)}
+.drawer-langs{margin-top:14px;width:max-content}
+.burger{display:none;background:none;border:1px solid var(--brd);color:var(--ink-2);border-radius:9px;
+  width:40px;height:36px;cursor:pointer;font-size:15px;line-height:1}
+.drawer{display:none}
+
+/* ─────────────────────────── hero ─────────────────────────── */
+.hero{padding:clamp(20px,4vw,44px) 0 var(--s4)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(360px,1.08fr);gap:clamp(20px,3.4vw,40px);align-items:center}
+.hero-grid > *{min-width:0}
+.kicker{display:inline-flex;align-items:center;gap:10px;font:600 10.5px/1 var(--mono);
+  letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:18px}
+.kicker:before{content:"";width:30px;height:1px;background:var(--teal);box-shadow:0 0 12px var(--teal)}
+.hero h1{margin:0;font-family:var(--head);font-weight:800;font-size:clamp(2.3rem,6.4vw,4.1rem);
+  line-height:.96;letter-spacing:-.025em}
+.hero h1 em{font-style:normal;color:var(--bronze);
+  background:linear-gradient(180deg,var(--bronze-hi),var(--bronze-lo));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.tagline{margin:20px 0 0;max-width:40rem;color:var(--ink-2);font-size:clamp(15px,1.5vw,17.5px)}
+.tagline code{font-family:var(--mono);font-size:.88em;color:var(--bronze);
+  background:rgba(201,164,106,.08);padding:1px 6px;border-radius:5px;border:1px solid rgba(201,164,106,.16)}
+.tagline b{color:var(--ink);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;gap:11px;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:13px 21px;border-radius:999px;
+  font-family:var(--head);font-weight:700;font-size:12.5px;letter-spacing:.05em;text-decoration:none;
+  transition:transform .22s var(--ease),box-shadow .22s var(--ease),border-color .22s var(--ease);border:1px solid transparent;cursor:pointer}
+.btn:hover{transform:translateY(-2px)}
+.btn-p{background:linear-gradient(135deg,var(--bronze-hi),#a97f3d);color:#140f07;box-shadow:0 6px 26px rgba(201,164,106,.24)}
+.btn-p:hover{box-shadow:0 10px 38px rgba(201,164,106,.4)}
+.btn-live{background:linear-gradient(135deg,var(--teal),#2fc79b);color:#02120c;box-shadow:0 6px 26px rgba(102,247,197,.22)}
+.btn-live:hover{box-shadow:0 10px 38px rgba(102,247,197,.42)}
+.btn-live .dot{width:7px;height:7px;border-radius:50%;background:#02120c;animation:beat 1.8s infinite}
+@keyframes beat{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.btn-g{border-color:var(--brd);color:var(--ink);background:rgba(10,14,20,.5);backdrop-filter:blur(8px)}
+.btn-g:hover{border-color:var(--brd-hot);box-shadow:0 0 24px rgba(102,247,197,.16)}
+.cmd{margin-top:22px;display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;
+  border:1px solid rgba(201,164,106,.28);background:linear-gradient(180deg,rgba(8,12,19,.85),rgba(6,9,14,.7))}
+.cmd code{flex:1;min-width:0;font-family:var(--mono);font-size:.86rem;color:var(--teal);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.cmd code::-webkit-scrollbar{display:none}
+.cmd .sig{color:var(--faint);user-select:none}
+.copy{flex:none;background:rgba(201,164,106,.1);border:1px solid var(--brd);color:var(--bronze);
+  font:600 10px/1 var(--mono);letter-spacing:.1em;padding:7px 10px;border-radius:7px;cursor:pointer;transition:.2s var(--ease)}
+.copy:hover{background:rgba(201,164,106,.2);color:var(--bronze-hi)}
+.copy.done{color:var(--approve);border-color:rgba(67,230,90,.4)}
+
+/* ────────────────────────── 3D stage ────────────────────────── */
+.stage{position:relative;height:min(600px,74vw);min-height:400px;border-radius:var(--r-l);isolation:isolate;
+  border:1px solid rgba(201,164,106,.18);background:radial-gradient(120% 90% at 50% 8%,rgba(14,20,29,.75),rgba(4,6,10,.92));
+  overflow:hidden;cursor:grab;touch-action:pan-y;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.05),inset 0 0 70px rgba(102,247,197,.035)}
+.stage:active{cursor:grabbing}
+#gate-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none}
+.stage .corner{position:absolute;width:16px;height:16px;border:1px solid rgba(201,164,106,.4);pointer-events:none;opacity:.7}
+.stage .corner.tl{top:12px;left:12px;border-right:0;border-bottom:0}
+.stage .corner.tr{top:12px;right:12px;border-left:0;border-bottom:0}
+.stage .corner.bl{bottom:12px;left:12px;border-right:0;border-top:0}
+.stage .corner.br{bottom:12px;right:12px;border-left:0;border-top:0}
+
+/* projected 3D labels */
+.tag3d{position:absolute;top:0;left:0;z-index:3;pointer-events:none;
+  padding:6px 9px;border-radius:7px;border:1px solid rgba(201,164,106,.26);
+  background:rgba(5,8,13,.88);backdrop-filter:blur(10px);box-shadow:0 6px 20px -8px rgba(0,0,0,.9);
+  font:600 9px/1.35 var(--mono);letter-spacing:.12em;color:var(--muted);
+  transform:translate(-50%,-50%);opacity:0;transition:opacity .35s var(--ease),border-color .25s var(--ease)}
+.tag3d b{display:block;font-size:10.5px;letter-spacing:.14em;margin-bottom:2px}
+.tag3d.approve b{color:var(--approve)} .tag3d.review b{color:var(--review)} .tag3d.reject b{color:var(--reject)}
+.tag3d.hot{border-color:var(--brd-hot);box-shadow:0 0 22px rgba(102,247,197,.2)}
+
+/* HUD readout — driven by the real audit report */
+.hud{position:absolute;left:12px;right:12px;bottom:12px;z-index:4;display:grid;
+  grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:11px 14px;
+  border-radius:14px;border:1px solid var(--brd);background:linear-gradient(180deg,rgba(8,12,18,.72),rgba(6,9,14,.88));
+  backdrop-filter:blur(14px);font-family:var(--mono);box-shadow:0 12px 40px -18px rgba(0,0,0,.9)}
+.hud .verdict{display:flex;flex-direction:column;gap:4px;min-width:104px}
+.hud .vlabel{font-size:8.5px;letter-spacing:.18em;color:var(--faint)}
+.hud .vchip{font-family:var(--head);font-weight:800;font-size:16px;letter-spacing:.06em;line-height:1;
+  transition:color .3s var(--ease),text-shadow .3s var(--ease)}
+.hud .mid{min-width:0}
+.hud .phase{display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:.13em;color:var(--muted);margin-bottom:6px}
+.hud .phase i{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 9px var(--teal);flex:none}
+.hud .msg{color:var(--ink-2);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud .bar{height:3px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:7px}
+.hud .bar span{display:block;height:100%;width:0;border-radius:2px;transition:width .5s var(--ease),background .3s var(--ease)}
+.hud .meta{display:flex;gap:16px;text-align:right}
+.hud .meta div{display:flex;flex-direction:column;gap:3px}
+.hud .meta .k{font-size:8.5px;letter-spacing:.16em;color:var(--faint)}
+.hud .meta .v{font-family:var(--head);font-weight:700;font-size:14px;color:var(--ink)}
+.hint{position:absolute;left:50%;bottom:78px;transform:translateX(-50%);z-index:3;
+  font:500 8.5px/1 var(--mono);letter-spacing:.2em;color:var(--faint);white-space:nowrap;pointer-events:none;
+  transition:opacity .5s var(--ease)}
+.gate-fallback{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:24px;z-index:5}
+.gate-fallback p{color:var(--muted);font:500 12px var(--mono);max-width:34ch;margin:14px auto 0}
+.stage.failed .gate-fallback{display:grid}
+
+/* ─────────────────────── metric strip ─────────────────────── */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;padding:var(--s4) 0 0}
+.metric{--vsize:clamp(20px,2.4vw,27px);padding:14px 16px;border-radius:var(--r-m);border:1px solid var(--brd);
+  background:linear-gradient(180deg,rgba(12,17,25,.6),rgba(8,11,17,.4));text-align:center;transition:.24s var(--ease)}
+.metric:hover{border-color:var(--brd-hot);transform:translateY(-2px)}
+.metric .v{font-family:var(--head);font-weight:800;font-size:var(--vsize);color:var(--bronze);
+  line-height:1.1;letter-spacing:-.01em;white-space:nowrap;
+  /* a fixed box keeps the label row level whatever size the value takes */
+  min-height:calc(var(--vsize) * 1.15);display:flex;align-items:center;justify-content:center}
+/* word-shaped values (Ed25519) don't get numeral sizing — they'd push past the tile */
+.metric .v.word{font-size:clamp(15px,1.55vw,19px);letter-spacing:.03em}
+.metric .k{font:500 9px/1.3 var(--mono);color:var(--faint);letter-spacing:.15em;margin-top:6px;text-transform:uppercase}
+
+/* ───────────────────────── sections ───────────────────────── */
+section{padding:var(--s7) 0}
+section[id]{scroll-margin-top:84px}   /* the sticky nav must not cover the heading */
+.eyebrow{font:600 10px/1 var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--teal);
+  display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.eyebrow:before{content:"";width:22px;height:1px;background:currentColor;opacity:.7}
+.shead{margin-bottom:var(--s5);max-width:70ch}
+.shead h2{margin:0;font-family:var(--head);font-weight:800;font-size:clamp(24px,3.6vw,38px);letter-spacing:-.02em;line-height:1.08}
+.shead p{margin:12px 0 0;color:var(--muted);font-size:15.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:12px}
+.card{border:1px solid var(--brd);border-radius:var(--r-m);padding:20px;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,rgba(12,17,25,.62),rgba(8,11,17,.42));backdrop-filter:blur(10px);transition:.26s var(--ease)}
+.card:before{content:"";position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 0,rgba(102,247,197,.09),transparent 70%);
+  opacity:0;transition:opacity .28s var(--ease);pointer-events:none}
+.card:hover{border-color:var(--brd-hot);transform:translateY(-3px);box-shadow:0 20px 50px -24px rgba(0,0,0,.85)}
+.card:hover:before{opacity:1}
+.card h3{margin:0 0 9px;font-family:var(--head);font-weight:700;font-size:15px;letter-spacing:.01em}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.card code{font-family:var(--mono);font-size:.85em;color:var(--bronze)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.tag{font:500 9.5px/1 var(--mono);padding:5px 8px;border-radius:6px;letter-spacing:.08em;
+  background:rgba(201,164,106,.09);color:var(--bronze);border:1px solid rgba(201,164,106,.16)}
+.tag.t{background:rgba(102,247,197,.08);color:var(--teal);border-color:rgba(102,247,197,.18)}
+
+/* pipeline rail */
+.rail{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-bottom:var(--s4)}
+.rail-step{position:relative;padding:16px 12px;border-radius:14px;border:1px solid var(--brd);
+  background:linear-gradient(180deg,rgba(10,15,22,.62),rgba(7,10,16,.5));font:500 10.5px/1.5 var(--mono);color:var(--muted)}
+.rail-step strong{display:block;font-family:var(--head);font-weight:700;font-size:12.5px;color:var(--ink);
+  letter-spacing:.05em;margin-bottom:5px}
+.rail-step i{display:block;width:7px;height:7px;border-radius:50%;background:var(--teal);
+  box-shadow:0 0 10px var(--teal);margin-bottom:11px;animation:pip 2.2s infinite}
+.rail-step:nth-child(2) i{animation-delay:.3s}.rail-step:nth-child(3) i{animation-delay:.6s}
+.rail-step:nth-child(4) i{animation-delay:.9s}.rail-step:nth-child(5) i{animation-delay:1.2s}
+.rail-step:nth-child(6) i{animation-delay:1.5s}
+.rail-step:not(:last-child):after{content:"";position:absolute;right:-6px;top:50%;width:8px;height:1px;
+  background:linear-gradient(90deg,var(--bronze),var(--teal));opacity:.75}
+
+/* verdict explorer */
+.explorer{border:1px solid var(--brd);border-radius:var(--r-l);overflow:hidden;
+  background:linear-gradient(180deg,rgba(10,15,22,.7),rgba(6,9,14,.6));backdrop-filter:blur(10px)}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--brd);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:1;min-width:150px;background:none;border:0;border-bottom:2px solid transparent;
+  padding:16px 14px;cursor:pointer;text-align:left;transition:.22s var(--ease);color:var(--muted);font-family:var(--mono)}
+.tabs button:hover{background:rgba(255,255,255,.02)}
+.tabs button .d{display:block;font-family:var(--head);font-weight:800;font-size:14px;letter-spacing:.06em;margin-bottom:3px}
+.tabs button .s{font-size:9.5px;letter-spacing:.11em}
+.tabs button[aria-selected=true]{background:rgba(255,255,255,.03)}
+.tabs button[data-v=approve][aria-selected=true]{border-bottom-color:var(--approve)}
+.tabs button[data-v=review][aria-selected=true]{border-bottom-color:var(--review)}
+.tabs button[data-v=reject][aria-selected=true]{border-bottom-color:var(--reject)}
+.tabs button[data-v=approve] .d{color:var(--approve)}
+.tabs button[data-v=review] .d{color:var(--review)}
+.tabs button[data-v=reject] .d{color:var(--reject)}
+.panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:0}
+.panel-l{padding:22px;border-right:1px solid var(--brd);min-width:0}
+.panel-r{padding:22px;min-width:0;position:relative}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-family:var(--mono);font-size:11.5px;margin-bottom:20px}
+.kv dt{color:var(--faint);letter-spacing:.1em;font-size:9.5px;align-self:center}
+.kv dd{margin:0;color:var(--ink)}
+.finding{border:1px solid var(--brd);border-left-width:3px;border-radius:9px;padding:12px 14px;margin-bottom:9px;
+  background:rgba(6,10,16,.5)}
+.finding.critical{border-left-color:var(--reject)}
+.finding.high{border-left-color:#ff8a3d}
+.finding.medium{border-left-color:var(--review)}
+.finding.low{border-left-color:var(--teal)}
+.finding .fh{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px}
+.finding .code{font:600 10.5px/1 var(--mono);color:var(--ink);letter-spacing:.03em}
+.finding .sev{font:600 8.5px/1 var(--mono);letter-spacing:.14em;padding:4px 7px;border-radius:5px;text-transform:uppercase}
+.finding.critical .sev{background:rgba(255,45,85,.14);color:#ff7d99}
+.finding.high .sev{background:rgba(255,138,61,.14);color:#ffab77}
+.finding.medium .sev{background:rgba(255,204,51,.13);color:#ffdd80}
+.finding.low .sev{background:rgba(102,247,197,.12);color:var(--teal)}
+.finding p{margin:0;color:var(--muted);font-size:12.5px}
+.finding .rem{margin-top:6px;color:var(--ink-2);font-size:12px}
+.finding .rem b{color:var(--bronze);font:600 9px var(--mono);letter-spacing:.12em;display:block;margin-bottom:2px}
+.owasp{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.owasp span{font:500 9px/1 var(--mono);padding:4px 7px;border-radius:5px;letter-spacing:.06em;
+  background:rgba(255,85,119,.1);color:#ff8fa6;border:1px solid rgba(255,85,119,.2)}
+.clean{padding:26px 18px;text-align:center;border:1px dashed rgba(67,230,90,.3);border-radius:12px;
+  background:rgba(67,230,90,.045);color:var(--approve);font:600 12px var(--mono);letter-spacing:.08em}
+.jsonhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.jsonhead h4{margin:0;font:600 9.5px/1 var(--mono);letter-spacing:.18em;color:var(--faint);text-transform:uppercase}
+pre.json{margin:0;padding:16px;border-radius:12px;border:1px solid var(--brd-2);background:rgba(4,7,11,.75);
+  font-family:var(--mono);font-size:11.5px;line-height:1.62;overflow:auto;max-height:420px;color:var(--ink-2)}
+pre.json .k{color:var(--bronze)} pre.json .s{color:var(--teal)} pre.json .n{color:#9db4ff}
+pre.json .b{color:#ff8fa6} pre.json .p{color:var(--faint)}
+.note{margin:14px 0 0;color:var(--faint);font:500 11px/1.6 var(--mono)}
+
+/* roles table */
+.roles{overflow-x:auto;border:1px solid var(--brd);border-radius:var(--r-m);background:rgba(8,12,18,.5)}
+table{width:100%;border-collapse:collapse;min-width:620px;font-size:13.5px}
+th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--brd-2);vertical-align:top}
+thead th{font:600 9.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);
+  background:rgba(255,255,255,.02);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:rgba(102,247,197,.03)}
+td.who{font-family:var(--head);font-weight:700;letter-spacing:.05em;white-space:nowrap}
+td.who span{display:block;font:500 9.5px/1.4 var(--mono);letter-spacing:.1em;color:var(--faint);margin-top:3px}
+td{color:var(--muted)}
+td.who{color:var(--ink)}
+td code{font-family:var(--mono);font-size:.86em;color:var(--bronze)}
+
+/* admission gates */
+.gates{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.gate-item{border:1px solid var(--brd);border-radius:14px;padding:16px;background:rgba(9,13,20,.55);position:relative}
+.gate-item h4{margin:0 0 6px;font-family:var(--head);font-weight:700;font-size:13px}
+.gate-item p{margin:0;color:var(--muted);font-size:12.5px}
+.gate-item .st{position:absolute;top:14px;right:14px;font:600 8.5px/1 var(--mono);letter-spacing:.12em;
+  padding:4px 7px;border-radius:5px}
+.st.on{background:rgba(67,230,90,.12);color:var(--approve)}
+.st.opt{background:rgba(255,204,51,.12);color:var(--review)}
+.callout{margin-top:var(--s4);padding:18px 20px;border-radius:var(--r-m);border:1px solid rgba(255,204,51,.28);
+  background:linear-gradient(135deg,rgba(255,204,51,.07),rgba(201,164,106,.04));color:var(--ink-2);font-size:14px}
+.callout b{color:var(--review);font-family:var(--head);letter-spacing:.03em}
+
+/* course */
+.course{padding:clamp(24px,3.6vw,38px);border-radius:var(--r-l);
+  border:1px solid rgba(102,247,197,.26);
+  background:linear-gradient(150deg,rgba(102,247,197,.07),rgba(201,164,106,.05) 55%,rgba(8,12,18,.5));
+  box-shadow:0 0 80px -30px rgba(102,247,197,.25)}
+.course h2{margin:0 0 12px;font-family:var(--head);font-weight:800;font-size:clamp(22px,3.2vw,32px);letter-spacing:-.02em}
+.course > p{margin:0 0 var(--s4);color:var(--ink-2);max-width:72ch}
+.course > p a{color:var(--teal);text-decoration:none;border-bottom:1px solid rgba(102,247,197,.3)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:9px;counter-reset:step}
+.step{border:1px solid var(--brd);border-radius:12px;padding:14px 14px 13px;background:rgba(6,10,16,.6);position:relative;transition:.22s var(--ease)}
+.step:hover{border-color:var(--brd-hot);transform:translateY(-2px)}
+.step:before{counter-increment:step;content:counter(step,decimal-leading-zero);position:absolute;top:11px;right:12px;
+  font:800 12px var(--head);color:var(--bronze);opacity:.55}
+.step h3{margin:0 0 5px;font-family:var(--head);font-weight:700;font-size:12.5px;padding-right:26px}
+.step p{margin:0;color:var(--muted);font-size:11.5px;line-height:1.5}
+.step p code{font-family:var(--mono);font-size:.94em;color:var(--bronze)}
+.langs{display:flex;flex-wrap:wrap;gap:9px;margin-top:var(--s4)}
+.langs a{color:var(--teal);font:500 12.5px var(--mono);text-decoration:none;padding:8px 14px;
+  border:1px solid rgba(102,247,197,.26);border-radius:999px;transition:.2s var(--ease)}
+.langs a:hover{background:rgba(102,247,197,.1);box-shadow:0 0 20px rgba(102,247,197,.18)}
+.langs a.alt{color:var(--bronze);border-color:rgba(201,164,106,.28)}
+.langs a.alt:hover{background:rgba(201,164,106,.1);box-shadow:0 0 20px rgba(201,164,106,.16)}
+
+/* footer */
+footer{border-top:1px solid var(--brd);padding:var(--s5) 0 var(--s6);position:relative;z-index:2}
+.fgrid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:var(--s4)}
+.fgrid h5{margin:0 0 12px;font:600 9.5px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.fgrid a{display:block;color:var(--muted);text-decoration:none;font-size:13px;padding:4px 0;transition:color .2s var(--ease)}
+.fgrid a:hover{color:var(--teal)}
+.fgrid p{margin:0;color:var(--faint);font-size:13px;max-width:34ch}
+.fbrand{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:800;letter-spacing:.2em;
+  font-size:14px;margin-bottom:12px;color:var(--ink)}
+.fbot{margin-top:var(--s5);padding-top:18px;border-top:1px solid var(--brd-2);
+  display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;color:var(--faint);font:500 11px var(--mono)}
+.fbot code{color:var(--bronze)}
+.fbot a{color:var(--teal);text-decoration:none}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+/* ───────────────────────── responsive ───────────────────────── */
+@media(max-width:1000px){
+  .hero-grid{grid-template-columns:1fr}
+  .stage{order:-1;height:min(460px,78vw);margin-bottom:6px}
+  .rail{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .rail-step:nth-child(3):after{display:none}
+  .panel{grid-template-columns:1fr}
+  .panel-l{border-right:0;border-bottom:1px solid var(--brd)}
+  .fgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  section{padding:var(--s6) 0}
+  .nav-links{display:none}
+  .burger{display:block}
+  .drawer{display:none;position:fixed;inset:62px 0 auto;z-index:59;padding:14px 22px 20px;
+    background:rgba(6,8,12,.97);backdrop-filter:blur(18px);border-bottom:1px solid var(--brd)}
+  .drawer.open{display:block}
+  .drawer a{display:block;padding:12px 4px;color:var(--ink-2);text-decoration:none;
+    font:500 13px var(--mono);letter-spacing:.06em;border-bottom:1px solid var(--brd-2)}
+  .drawer a:last-child{border-bottom:0}
+  .tag3d{display:none}
+  .hud{grid-template-columns:auto 1fr;gap:9px;padding:8px 10px;border-radius:12px}
+  .hud .verdict{min-width:82px;gap:2px}
+  .hud .vchip{font-size:14px}
+  .hud .phase{margin-bottom:4px}
+  .hud .msg{font-size:9.5px}
+  .hud .bar{margin-top:5px}
+  .hud .meta{grid-column:1/-1;justify-content:space-between;text-align:left;gap:8px}
+  .hud .meta .v{font-size:12px}
+  .hint{display:none}
+  .rail{grid-template-columns:1fr 1fr}
+  .rail-step:after{display:none}
+  .fgrid{grid-template-columns:1fr}
+  .stage{height:min(470px,116vw)}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .brand .pip,.btn-live .dot,.rail-step i{animation:none}
+  .rv{opacity:1;transform:none;transition:none}
+  .hint{display:none}
+  .btn:hover,.card:hover,.metric:hover,.step:hover{transform:none}
+}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="nebula" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<nav>
+  <div class="wrap row">
+    <a class="brand" href="#top"><span class="pip" aria-hidden="true"></span>THEMIS</a>
+    <div class="nav-links" id="navlinks">
+      <a href="#gate" data-i18n="nav.gate">The gate</a>
+      <a href="#verdicts" data-i18n="nav.verdicts">Verdicts</a>
+      <a href="./console/" data-i18n="nav.console">Console</a>
+      <a href="#roles" data-i18n="nav.roles">Roles</a>
+      <a href="#admission" data-i18n="nav.admission">Admission</a>
+      <a href="#course" data-i18n="nav.course">Mini-course</a>
+      <a class="ext" href="https://github.com/alexar76/themis" data-i18n="nav.source">Source</a>
+      <a class="ext" href="https://magic-ai-factory.com/monitor/" data-i18n="nav.monitor">Monitor</a>
+      <a class="ext" href="https://alexar76.github.io/themis/console/" data-i18n="nav.dashboards">Dashboards</a>
+    </div>
+    <div class="langs-switch" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+      <button type="button" data-lang="es" aria-pressed="false">ES</button>
+      <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+      <button type="button" data-lang="zh" aria-pressed="false">ZH</button>
+    </div>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">☰</button>
+  </div>
+  <div class="progress" id="progress"></div>
+</nav>
+<div class="drawer" id="drawer">
+  <a href="#gate" data-i18n="nav.gate">The gate</a>
+  <a href="#verdicts" data-i18n="drawer.verdicts">Three verdicts</a>
+  <a href="./console/" data-i18n="nav.console">Console</a>
+  <a href="#roles" data-i18n="drawer.roles">Roles in the ecosystem</a>
+  <a href="#admission" data-i18n="drawer.admission">Admission path</a>
+  <a href="#course" data-i18n="nav.course">Mini-course</a>
+  <a href="https://github.com/alexar76/themis">Source ↗</a>
+  <a href="https://magic-ai-factory.com/monitor/">Alien Monitor ↗</a>
+  <a href="https://alexar76.github.io/themis/console/" data-i18n="nav.dashboards">Dashboards ↗</a>
+  <div class="langs-switch drawer-langs" role="group" aria-label="Language">
+    <button type="button" data-lang="en">EN</button>
+    <button type="button" data-lang="ru">RU</button>
+    <button type="button" data-lang="es">ES</button>
+    <button type="button" data-lang="fr">FR</button>
+    <button type="button" data-lang="zh">ZH</button>
+  </div>
+</div>
+
+<main id="top">
+  <!-- ───────────────── hero ───────────────── -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="kicker" data-i18n="hero.kicker">AIMarket · publish admission</div>
+        <h1 data-i18n="hero.h1">Admit. Or don’t.<br><em>Before</em> the catalogue.</h1>
+        <p class="tagline" data-i18n="hero.tagline">
+          THEMIS (Θέμις) is the signed publish-time gate: <code>approve</code> / <code>review</code> /
+          <code>reject</code> from a <b>bounded dossier</b> — deterministic policy, request-bound
+          Ed25519 receipt, no free crawl of the candidate. Not Metis (cognition).
+          Not WARDEN (invoke-time firewall).
+        </p>
+        <div class="cta">
+          <a class="btn btn-live" href="https://magic-ai-factory.com/monitor/"><span class="dot" aria-hidden="true"></span><span data-i18n="hero.cta.monitor">See it on Alien Monitor</span></a>
+          <a class="btn btn-p" href="./console/" data-i18n="hero.cta.console">Open the console</a>
+          <a class="btn btn-g" href="#course" data-i18n="hero.cta.course">Rebuild from the mini-course</a>
+        </div>
+        <div class="cmd">
+          <span class="sig">$</span>
+          <code id="cmdtext">uvx create-aimarket-agent themis --kind tool --metis</code>
+          <button class="copy" id="copybtn" type="button" data-i18n="cmd.copy">COPY</button>
+        </div>
+      </div>
+
+      <div class="stage" id="stage">
+        <canvas id="gate-canvas" aria-label="Interactive 3D model of the THEMIS admission gate, cycling through approve, review and reject verdicts"></canvas>
+        <span class="corner tl" aria-hidden="true"></span><span class="corner tr" aria-hidden="true"></span>
+        <span class="corner bl" aria-hidden="true"></span><span class="corner br" aria-hidden="true"></span>
+
+        <div class="tag3d approve" id="tag-approve"><b>APPROVE</b><span data-i18n="lane.approve">catalogue path</span></div>
+        <div class="tag3d review" id="tag-review"><b>REVIEW</b><span data-i18n="lane.review">human · Metis advisory</span></div>
+        <div class="tag3d reject" id="tag-reject"><b>REJECT</b><span data-i18n="lane.reject">fail closed</span></div>
+
+        <div class="hint" id="hint" data-i18n="stage.hint">DRAG TO ORBIT · SCROLL TO ZOOM · CLICK A LANE</div>
+
+        <div class="hud" aria-live="polite">
+          <div class="verdict">
+            <span class="vlabel" data-i18n="hud.decision">DECISION</span>
+            <span class="vchip" id="hud-decision">—</span>
+          </div>
+          <div class="mid">
+            <div class="phase"><i aria-hidden="true"></i><span id="hud-phase" data-i18n="hud.boot">BOOTING RENDERER</span></div>
+            <div class="msg" id="hud-msg" data-i18n="hud.booting">initialising procedural environment…</div>
+            <div class="bar"><span id="hud-bar"></span></div>
+          </div>
+          <div class="meta">
+            <div><span class="k" data-i18n="hud.score">SCORE</span><span class="v" id="hud-score">—</span></div>
+            <div><span class="k" data-i18n="hud.risk">RISK</span><span class="v" id="hud-risk">—</span></div>
+            <div><span class="k" data-i18n="hud.findings">FINDINGS</span><span class="v" id="hud-find">—</span></div>
+          </div>
+        </div>
+
+        <div class="gate-fallback">
+          <div>
+            <svg width="96" height="96" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+              <path d="M48 14v58M22 34h52M22 34l-12 24h24zM74 34l12 24H62z" stroke="#c9a46a" stroke-width="2.5" stroke-linejoin="round"/>
+              <circle cx="48" cy="14" r="5" fill="#66f7c5"/>
+              <circle cx="48" cy="78" r="9" stroke="#c9a46a" stroke-width="2.5"/>
+            </svg>
+            <p data-i18n="stage.fallback">WebGL is unavailable here. The gate logic is identical — read the signed verdicts below.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="metrics rv">
+        <div class="metric"><div class="v">3</div><div class="k" data-i18n="metric.verdicts">Verdicts</div></div>
+        <div class="metric"><div class="v">84</div><div class="k" data-i18n="metric.tests">Tests</div></div>
+        <div class="metric"><div class="v">98%</div><div class="k" data-i18n="metric.coverage">Coverage</div></div>
+        <div class="metric"><div class="v word">Ed25519</div><div class="k" data-i18n="metric.receipt">Signed receipt</div></div>
+        <div class="metric"><div class="v">12</div><div class="k" data-i18n="metric.steps">Course steps</div></div>
+        <div class="metric"><div class="v">5</div><div class="k" data-i18n="metric.langs">Languages</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── the gate ───────────────── -->
+  <section class="wrap" id="gate">
+    <div class="shead rv">
+      <div class="eyebrow" data-i18n="gate.eyebrow">Candidate → gate → receipt</div>
+      <h2 data-i18n="gate.h2">One dossier in. One signed verdict out.</h2>
+      <p data-i18n="gate.lead">
+        The policy engine decides immediately from identity, transport, permissions, cost, schemas and
+        evidence shape. Metis may add an asynchronous second opinion — it never overrides the signed
+        verdict. Alien Monitor only ever sees dossier-free telemetry.
+      </p>
+    </div>
+
+    <div class="rail rv" aria-label="Admission pipeline">
+      <div class="rail-step"><i aria-hidden="true"></i><strong data-i18n="rail.1.t">Candidate</strong><span data-i18n="rail.1.d">bounded dossier ≤ 256 KiB</span></div>
+      <div class="rail-step"><i aria-hidden="true"></i><strong data-i18n="rail.2.t">Policy</strong><span data-i18n="rail.2.d">deterministic findings</span></div>
+      <div class="rail-step"><i aria-hidden="true"></i><strong data-i18n="rail.3.t">Verdict</strong><span data-i18n="rail.3.d">score · risk tier</span></div>
+      <div class="rail-step"><i aria-hidden="true"></i><strong data-i18n="rail.4.t">Receipt</strong><span data-i18n="rail.4.d">request-bound Ed25519</span></div>
+      <div class="rail-step"><i aria-hidden="true"></i><strong data-i18n="rail.5.t">Hub</strong><span data-i18n="rail.5.d">catalogue or block</span></div>
+      <div class="rail-step"><i aria-hidden="true"></i><strong data-i18n="rail.6.t">Monitor</strong><span data-i18n="rail.6.d">dossier-free trail</span></div>
+    </div>
+
+    <div class="grid rv">
+      <article class="card">
+        <h3 data-i18n="card.1.t">Deterministic before clever</h3>
+        <p data-i18n="card.1.d">Severity-weighted findings produce the score. A single <code>critical</code> — or anything
+          under 50 — rejects. A <code>high</code>, or a score under the buyer’s floor, routes to review.</p>
+        <div class="tags"><span class="tag">fail-closed</span><span class="tag t">no model in the hot path</span></div>
+      </article>
+      <article class="card">
+        <h3 data-i18n="card.2.t">A link is not evidence</h3>
+        <p data-i18n="card.2.d">URLs are parsed, never fetched — so a decorative reference proves nothing and
+          no longer counts. Only digest-bound artifacts satisfy the evidence floor, and an
+          <code>attestation</code> is checked offline against its own signed statement.</p>
+        <div class="tags"><span class="tag">digest-bound</span><span class="tag t">no free crawl</span></div>
+      </article>
+      <article class="card">
+        <h3 data-i18n="card.3.t">Receipt you can re-check</h3>
+        <p data-i18n="card.3.d">The response signature covers the <em>exact</em> submitted input and the result, under a
+          persistent provider key stored with mode <code>0600</code>.</p>
+        <div class="tags"><span class="tag">Ed25519</span><span class="tag t">request-bound</span></div>
+      </article>
+      <article class="card">
+        <h3 data-i18n="card.4.t">Hub overlay, operator-owned</h3>
+        <p data-i18n="card.4.d">Modes are <code>off</code> / <code>advisory</code> / <code>enforce</code>. Pin an auditor
+          key and verdicts are recorded from then on; blocking still takes a deliberate
+          <code>enforce</code>. THEMIS never lists anything by itself.</p>
+        <div class="tags"><span class="tag">operator switch</span><span class="tag t">not open signup</span></div>
+      </article>
+      <article class="card">
+        <h3 data-i18n="card.5.t">Mapped to OWASP Agentic</h3>
+        <p data-i18n="card.5.d">Every finding carries ASI mappings from the OWASP Top 10 for Agentic Applications, so a
+          verdict lands in language a security reviewer already uses.</p>
+        <div class="tags"><span class="tag">ASI01–ASI10</span><span class="tag t">procurement aid</span></div>
+      </article>
+      <article class="card">
+        <h3 data-i18n="card.6.t">Lazy Metis, never blocking</h3>
+        <p data-i18n="card.6.d">With <code>request_metis</code> the verdict returns instantly and a bounded advisory job
+          runs behind a poll URL. A shared job store lets any replica answer any poll.</p>
+        <div class="tags"><span class="tag">async advisory</span><span class="tag t">replica-safe polling</span></div>
+      </article>
+      <article class="card">
+        <h3 data-i18n="card.7.t">A signed declaration is deniable no more</h3>
+        <p data-i18n="card.7.d">Declared permissions stay a declaration — but the publisher can sign the exact
+          declaration with its provider key. Policy can demand that signature, and a proof over
+          <em>different</em> permissions is a critical finding, not a shrug.</p>
+        <div class="tags"><span class="tag">non-repudiable</span><span class="tag t">slashable claim</span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ───────────────── verdict explorer ───────────────── -->
+  <section class="wrap" id="verdicts">
+    <div class="shead rv">
+      <div class="eyebrow" data-i18n="verdicts.eyebrow">Real output, not a mock-up</div>
+      <h2 data-i18n="verdicts.h2">Three dossiers, three signed verdicts</h2>
+      <p data-i18n="verdicts.lead">
+        Every report below is the literal output of this repository’s policy engine on
+        <code style="font-family:var(--mono);color:var(--bronze)">examples/safe_candidate.json</code>
+        and two mutations of it. The 3D gate above is driven by exactly these numbers.
+      </p>
+    </div>
+
+    <div class="explorer rv">
+      <div class="tabs" role="tablist" aria-label="Verdict examples">
+        <button role="tab" data-v="approve" aria-selected="true" id="tab-approve" aria-controls="pane">
+          <span class="d">APPROVE</span><span class="s">score 100 · risk low · 0 findings</span></button>
+        <button role="tab" data-v="review" aria-selected="false" id="tab-review" aria-controls="pane">
+          <span class="d">REVIEW</span><span class="s">score 78 · risk high · 1 finding</span></button>
+        <button role="tab" data-v="reject" aria-selected="false" id="tab-reject" aria-controls="pane">
+          <span class="d">REJECT</span><span class="s">score 0 · risk critical · 8 findings</span></button>
+      </div>
+      <div class="panel" id="pane" role="tabpanel">
+        <div class="panel-l">
+          <dl class="kv" id="ex-kv"></dl>
+          <div id="ex-findings"></div>
+        </div>
+        <div class="panel-r">
+          <div class="jsonhead">
+            <h4 data-i18n="verdicts.reportlabel">Signed report · /invoke response</h4>
+            <button class="copy" id="ex-copy" type="button" data-i18n="ex.copy">COPY JSON</button>
+          </div>
+          <pre class="json" id="ex-json"></pre>
+          <p class="note" id="ex-note"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── roles ───────────────── -->
+  <section class="wrap" id="roles">
+    <div class="shead rv">
+      <div class="eyebrow" data-i18n="roles.eyebrow">Admission ≠ cognition ≠ runtime firewall</div>
+      <h2 data-i18n="roles.h2">Not Metis. Not WARDEN.</h2>
+      <p data-i18n="roles.lead">
+        Four different questions, four different components. Conflating them is how supply-chain
+        controls quietly stop working.
+      </p>
+    </div>
+    <div class="roles rv">
+      <table>
+        <thead>
+          <tr><th data-i18n="roles.th.1">Component</th><th data-i18n="roles.th.2">Question it answers</th><th data-i18n="roles.th.3">When it runs</th><th data-i18n="roles.th.4">Can it block a listing?</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="who">THEMIS<span data-i18n="roles.themis.sub">this repo</span></td>
+            <td data-i18n="roles.themis.q">May this third-party capability enter the public catalogue?</td>
+            <td data-i18n="roles.themis.when"><b style="color:var(--bronze)">Publish time</b>, once per candidate</td>
+            <td data-i18n="roles.themis.block">Yes — when Hub admission mode is <code>enforce</code></td>
+          </tr>
+          <tr>
+            <td class="who">Metis<span data-i18n="roles.metis.sub">verification tier</span></td>
+            <td data-i18n="roles.metis.q">Is this report internally consistent?</td>
+            <td data-i18n="roles.metis.when">Asynchronously, after the verdict</td>
+            <td data-i18n="roles.metis.block">No — advisory only, never overrides</td>
+          </tr>
+          <tr>
+            <td class="who">WARDEN<span data-i18n="roles.warden.sub">ARGUS firewall</span></td>
+            <td data-i18n="roles.warden.q">Should <em>this</em> tool call be allowed right now?</td>
+            <td data-i18n="roles.warden.when">Every invoke, on the client side</td>
+            <td data-i18n="roles.warden.block">No — it gates local calls, not the catalogue</td>
+          </tr>
+          <tr>
+            <td class="who">LUMEN<span data-i18n="roles.lumen.sub">trust graph</span></td>
+            <td data-i18n="roles.lumen.q">How much does the network trust this provider?</td>
+            <td data-i18n="roles.lumen.when">Continuously, from observed behaviour</td>
+            <td data-i18n="roles.lumen.block">Indirectly — trust floors filter discovery</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note rv" style="margin-top:16px" data-i18n="roles.note">
+      Consuming the ecosystem — searching Hub, calling listed capabilities, oracles, Metis — needs no
+      THEMIS at all. You are a buyer. THEMIS is on the <em>selling</em> path.
+    </p>
+  </section>
+
+  <!-- ───────────────── admission path ───────────────── -->
+  <section class="wrap" id="admission">
+    <div class="shead rv">
+      <div class="eyebrow" data-i18n="adm.eyebrow">The honest version</div>
+      <h2 data-i18n="adm.h2">“Anyone can dump a repo and get listed” — no.</h2>
+      <p data-i18n="adm.lead">
+        Listing a paid capability on the public Hub is a multi-layer publish path. THEMIS is only the
+        last, optional overlay on top of gates that are already on in production.
+      </p>
+    </div>
+    <div class="gates rv">
+      <div class="gate-item"><span class="st on" data-i18n="st.required">REQUIRED</span><h4 data-i18n="gate.1.t">Publish credential</h4>
+        <p data-i18n="gate.1.d">Operator-issued bearer / publisher token. There is no anonymous publish route.</p></div>
+      <div class="gate-item"><span class="st on" data-i18n="st.prod">ON IN PROD</span><h4 data-i18n="gate.2.t">Stake</h4>
+        <p data-i18n="gate.2.d">Minimum bond ≈ $25. Failed or unsigned invokes can slash it.</p></div>
+      <div class="gate-item"><span class="st on" data-i18n="st.required">REQUIRED</span><h4 data-i18n="gate.3.t">Manifest</h4>
+        <p data-i18n="gate.3.d"><code>publisher_id</code>, <code>provider_pubkey</code>, HTTPS <code>invoke_url</code>, schemas, price.</p></div>
+      <div class="gate-item"><span class="st on" data-i18n="st.required">REQUIRED</span><h4 data-i18n="gate.4.t">Response signatures</h4>
+        <p data-i18n="gate.4.d">Request-bound Ed25519 on every invoke, checked by Hub.</p></div>
+      <div class="gate-item"><span class="st on" data-i18n="st.on">ON</span><h4 data-i18n="gate.5.t">Trust floors</h4>
+        <p data-i18n="gate.5.d">LUMEN thresholds on discovery and invoke, enforced by Hub and clients.</p></div>
+      <div class="gate-item"><span class="st opt" data-i18n="st.operator">OPERATOR</span><h4 data-i18n="gate.6.t">THEMIS admission</h4>
+        <p data-i18n="gate.6.d">Pin an auditor key and verdicts are recorded (<code>advisory</code>); blocking needs
+          an explicit <code>enforce</code>.</p></div>
+    </div>
+    <div class="callout rv" data-i18n="adm.callout">
+      <b>Alien Monitor admits nobody.</b> It renders dossier-free admission telemetry after Hub has
+      already recorded a receipt. Nothing on a public dashboard can grant catalogue access.
+    </div>
+  </section>
+
+  <!-- ───────────────── course ───────────────── -->
+  <section class="wrap" id="course">
+    <div class="course rv">
+      <div class="eyebrow">create-aimarket-agent</div>
+      <h2 data-i18n="course.h2">Mini-course: build this agent yourself</h2>
+      <p data-i18n="course.lead">
+        THEMIS is the finished reference for the five-language
+        <a href="https://github.com/alexar76/create-aimarket-agent">create-aimarket-agent</a>
+        tutorial — twelve steps from an empty folder to a deliberate Hub publish, with the same 84
+        tests and the same fail-closed defaults you see above.
+      </p>
+      <div class="steps">
+        <div class="step"><h3 data-i18n="step.1.t">Generate</h3><p data-i18n="step.1.d"><code>uvx create-aimarket-agent</code> · tool + Metis</p></div>
+        <div class="step"><h3 data-i18n="step.2.t">Decide</h3><p data-i18n="step.2.d">Write the product decision before the code</p></div>
+        <div class="step"><h3 data-i18n="step.3.t">Model</h3><p data-i18n="step.3.d">Strict dossier, unknown fields rejected</p></div>
+        <div class="step"><h3 data-i18n="step.4.t">Findings</h3><p data-i18n="step.4.d">Deterministic policy → score → tier</p></div>
+        <div class="step"><h3 data-i18n="step.5.t">Metis</h3><p data-i18n="step.5.d">Real, lazy, non-blocking advisory</p></div>
+        <div class="step"><h3 data-i18n="step.6.t">Sign</h3><p data-i18n="step.6.d">Cover the exact submitted input</p></div>
+        <div class="step"><h3 data-i18n="step.7.t">Test</h3><p data-i18n="step.7.d">Behaviour, not only happy paths</p></div>
+        <div class="step"><h3 data-i18n="step.8.t">Scenario</h3><p data-i18n="step.8.d">Exercise the business case end to end</p></div>
+        <div class="step"><h3 data-i18n="step.9.t">Poll</h3><p data-i18n="step.9.d">Run Metis without blocking the user</p></div>
+        <div class="step"><h3 data-i18n="step.10.t">Containerize</h3><p data-i18n="step.10.d">Locked deps, unprivileged image</p></div>
+        <div class="step"><h3 data-i18n="step.11.t">Publish</h3><p data-i18n="step.11.d">An explicit operator action</p></div>
+        <div class="step"><h3 data-i18n="step.12.t">Done</h3><p data-i18n="step.12.d">Definition of done, then next exercises</p></div>
+      </div>
+      <div class="langs">
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.en.md">EN tutorial</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.ru.md">RU</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.es.md">ES</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.fr.md">FR</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.zh.md">ZH</a>
+        <a class="alt" href="https://github.com/alexar76/themis/blob/main/docs/admission/en.md">Supply-chain admission</a>
+        <a class="alt" href="https://github.com/alexar76/themis/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <div class="fbrand"><span class="pip" aria-hidden="true"></span>THEMIS</div>
+        <p data-i18n="footer.blurb">Publish-time admission gate for the AIMarket agent supply chain. MIT licensed reference
+          implementation — read it, run it, rebuild it.</p>
+      </div>
+      <div>
+        <h5 data-i18n="footer.repo">Repository</h5>
+        <a href="https://github.com/alexar76/themis">Source on GitHub</a>
+        <a href="https://github.com/alexar76/themis#quick-start">Quick start</a>
+        <a href="./console/" data-i18n="footer.console">Admission console</a>
+        <a href="https://github.com/alexar76/themis/blob/main/SECURITY.md">Security boundary</a>
+        <a href="https://github.com/alexar76/themis/blob/main/docs/VERIFICATION.md">Verification</a>
+      </div>
+      <div>
+        <h5 data-i18n="footer.docs">Docs</h5>
+        <a href="https://github.com/alexar76/themis/blob/main/docs/admission/en.md">Supply-chain admission</a>
+        <a href="https://github.com/alexar76/themis/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.en.md">Full tutorial</a>
+        <a href="https://github.com/alexar76/themis/blob/main/docs/README.ru.md">Русский · ES · FR · ZH</a>
+      </div>
+      <div>
+        <h5 data-i18n="footer.eco">Ecosystem</h5>
+        <a href="https://modeldev.modelmarket.dev/">AIMarket</a>
+        <a href="https://magic-ai-factory.com/monitor/">Alien Monitor</a>
+        <a href="https://alexar76.github.io/themis/console/" data-i18n="footer.dashboards">THEMIS dashboards</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent">create-aimarket-agent</a>
+        <a href="https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/">OWASP Agentic Top 10</a>
+      </div>
+    </div>
+    <div class="fbot">
+      <span>capability <code>agent.security.supply-chain.audit@v1</code></span>
+      <span data-i18n="footer.mit">MIT · a procurement aid, not a compliance certification</span>
+      <span><a href="https://alexar76.github.io/themis/">alexar76.github.io/themis</a></span>
+    </div>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"THEMIS",
+"applicationCategory":"SecurityApplication","operatingSystem":"Docker, Python 3.11+",
+"description":"Publish-time admission gate for the AIMarket agent supply chain. Signed approve / review / reject verdicts from a bounded candidate dossier.",
+"url":"https://alexar76.github.io/themis/","codeRepository":"https://github.com/alexar76/themis",
+"license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
+  }
+}
+</script>
+
+<!-- ═════════════════ i18n: EN is snapshotted from the markup itself ═════════════════ -->
+<script>
+(() => {
+  /* Strings that only exist in JavaScript (HUD, explorer chrome). Everything
+     rendered in the markup is snapshotted below, so English can never drift
+     out of sync with the page it describes. */
+  const JS_EN = {
+    'hud.boot': 'BOOTING RENDERER', 'hud.booting': 'initialising procedural environment…',
+    'hud.static': 'STATIC', 'hud.staticmsg': 'reduced motion — the gate is rendered without animation',
+    'phase.INTAKE': 'INTAKE', 'phase.POLICY': 'POLICY', 'phase.VERDICT': 'VERDICT',
+    'phase.RECEIPT': 'RECEIPT', 'phase.HANDOFF': 'HANDOFF',
+    'msg.intake': 'reading bounded dossier · manifest · permissions · evidence',
+    'msg.receipt': 'ed25519 receipt signed over the exact submitted input',
+    'msg.policy.approve': 'https · canonical key · 2 digest-bound artifacts · inside budget',
+    'msg.policy.review': 'evidence.sbom_missing — high severity, human decides',
+    'msg.policy.reject': 'plaintext http · no provider key · unapproved code + spend',
+    'msg.verdict': 'decision {id} · score {score} · tier {risk}',
+    'msg.handoff.approve': 'hub → public catalogue · monitor trail',
+    'msg.handoff.review': 'hub → human queue · metis advisory attached',
+    'msg.handoff.reject': 'hub → blocked · fail closed, nothing listed',
+    'kv.decision': 'DECISION', 'kv.score': 'SCORE', 'kv.risk': 'RISK TIER',
+    'kv.gate': 'HUMAN GATE', 'kv.cost': 'MONTHLY COST', 'kv.capability': 'CAPABILITY',
+    'kv.scope': 'SCOPE', 'kv.attested': 'ATTESTED',
+    'kv.required': 'required', 'kv.notrequired': 'not required',
+    'kv.calls': '@ 1 000 calls', 'kv.of': '/ 100',
+    'ex.clean': 'NO FINDINGS · POLICY SATISFIED', 'ex.remediation': 'REMEDIATION',
+    'ex.tab': 'score {score} · risk {risk} · {n}', 'ex.findings': 'findings', 'ex.finding': 'finding',
+    'ex.copy': 'COPY JSON', 'ex.copied': 'COPIED', 'cmd.copy': 'COPY',
+    'ex.story.approve': 'HTTPS endpoint, canonical Ed25519 key, personal-data access behind human approval, two digest-bound evidence artifacts, price and monthly budget inside policy.',
+    'ex.story.review': 'Same vendor, but the candidate now declares code execution. Human approval is in place, so nothing is critical — yet a code-executing agent with no SBOM is a high-severity finding, and high means a human decides.',
+    'ex.story.reject': 'Plaintext HTTP, no provider key, code execution and money spending with no human gate, secrets plus unrestricted network — an exfiltration path — and an empty evidence dossier. Four criticals; the score floors at zero.',
+    'ex.note.approve': 'Baseline dossier: examples/safe_candidate.json, unmodified.',
+    'ex.note.review': 'Mutation: permissions.execute_code = true, human approval kept, no SBOM evidence.',
+    'ex.note.reject': 'Mutation: http:// invoke_url, empty provider_pubkey, no approval gate, no evidence.',
+  };
+
+  const DICT = {
+    ru: {
+      'nav.gate': 'Шлюз', 'nav.verdicts': 'Вердикты', 'nav.roles': 'Роли', 'nav.admission': 'Допуск',
+      'nav.course': 'Мини-курс', 'nav.source': 'Исходники', 'nav.monitor': 'Монитор', 'nav.dashboards': 'Дашборды',
+      'drawer.verdicts': 'Три вердикта', 'drawer.roles': 'Роли в экосистеме', 'drawer.admission': 'Путь допуска',
+      'hero.kicker': 'AIMarket · допуск публикации',
+      'hero.h1': 'Допустить. Или нет.<br><em>До</em> каталога.',
+      'hero.tagline': 'THEMIS (Θέμις) — подписанный шлюз допуска на публикации: <code>approve</code> / <code>review</code> / <code>reject</code> по <b>ограниченному досье</b> — детерминированная политика, квитанция Ed25519, привязанная к запросу, и никакого обхода кандидата по ссылкам. Это не Metis (когниция) и не WARDEN (файрвол на вызове).',
+      'hero.cta.monitor': 'Смотреть в Alien Monitor', 'hero.cta.console': 'Открыть консоль', 'nav.console': 'Консоль', 'footer.console': 'Консоль допуска', 'hero.cta.course': 'Собрать по мини-курсу',
+      'hud.decision': 'РЕШЕНИЕ', 'hud.score': 'БАЛЛ', 'hud.risk': 'РИСК', 'hud.findings': 'НАХОДКИ',
+      'lane.approve': 'путь в каталог', 'lane.review': 'человек · совет Metis', 'lane.reject': 'отказ по умолчанию',
+      'stage.hint': 'ТЯНИТЕ — ОРБИТА · КОЛЁСИКО — МАСШТАБ · КЛИК ПО ПОЛОСЕ',
+      'stage.fallback': 'WebGL здесь недоступен. Логика шлюза та же — читайте подписанные вердикты ниже.',
+      'metric.verdicts': 'Вердикта', 'metric.tests': 'Тестов', 'metric.coverage': 'Покрытие',
+      'metric.receipt': 'Подпись квитанции', 'metric.steps': 'Шагов курса', 'metric.langs': 'Языков',
+      'gate.eyebrow': 'Кандидат → шлюз → квитанция',
+      'gate.h2': 'Одно досье на входе. Один подписанный вердикт на выходе.',
+      'gate.lead': 'Движок политики решает сразу — по идентичности, транспорту, разрешениям, стоимости, схемам и форме доказательств. Metis может добавить асинхронное второе мнение, но никогда не отменяет подписанный вердикт. Alien Monitor видит только телеметрию без досье.',
+      'rail.1.t': 'Кандидат', 'rail.1.d': 'ограниченное досье ≤ 256 КиБ',
+      'rail.2.t': 'Политика', 'rail.2.d': 'детерминированные находки',
+      'rail.3.t': 'Вердикт', 'rail.3.d': 'балл · уровень риска',
+      'rail.4.t': 'Квитанция', 'rail.4.d': 'Ed25519, привязанная к запросу',
+      'rail.5.t': 'Hub', 'rail.5.d': 'каталог или блокировка',
+      'rail.6.t': 'Монитор', 'rail.6.d': 'след без досье',
+      'card.1.t': 'Сначала детерминизм, потом ум',
+      'card.1.d': 'Балл складывается из находок с весом по severity. Один <code>critical</code> — или что угодно ниже 50 — это отказ. <code>high</code> или балл ниже порога покупателя уводит на review.',
+      'card.2.t': 'Ссылка — это не доказательство',
+      'card.2.d': 'URL разбираются, но никогда не запрашиваются — поэтому декоративная ссылка ничего не доказывает и больше не идёт в зачёт. Порог доказательств закрывают только артефакты с привязанным хешем, а <code>attestation</code> (аттестация) проверяется офлайн против собственного подписанного утверждения.',
+      'card.3.t': 'Квитанция, которую можно перепроверить',
+      'card.3.d': 'Подпись ответа покрывает <em>точный</em> отправленный вход и результат — постоянным ключом поставщика с правами <code>0600</code>.',
+      'card.4.t': 'Наложение Hub принадлежит оператору',
+      'card.4.d': 'Режимы: <code>off</code> / <code>advisory</code> / <code>enforce</code>. Закрепите ключ аудитора — и вердикты начинают записываться; блокировка по-прежнему требует осознанного <code>enforce</code>. THEMIS сам никого не публикует.',
+      'card.5.t': 'Сопоставлено с OWASP Agentic',
+      'card.5.d': 'У каждой находки есть коды ASI из OWASP Top 10 для агентных приложений — вердикт приходит на языке, которым безопасник уже пользуется.',
+      'card.6.t': 'Ленивый Metis, который не блокирует',
+      'card.6.d': 'С <code>request_metis</code> вердикт возвращается сразу, а ограниченная консультативная задача идёт за poll-URL. Общее хранилище задач позволяет любой реплике ответить на любой опрос.',
+      'card.7.t': 'Подписанную декларацию уже не отозвать',
+      'card.7.d': 'Заявленные разрешения остаются заявлением — но издатель может подписать точную декларацию ключом поставщика. Политика вправе требовать эту подпись, а доказательство поверх <em>других</em> разрешений — это critical, а не пожатие плечами.',
+      'verdicts.eyebrow': 'Реальный вывод, а не макет',
+      'verdicts.h2': 'Три досье, три подписанных вердикта',
+      'verdicts.lead': 'Каждый отчёт ниже — буквальный вывод движка политики этого репозитория на <code style="font-family:var(--mono);color:var(--bronze)">examples/safe_candidate.json</code> и двух его мутациях. 3D-шлюз выше управляется именно этими числами.',
+      'verdicts.reportlabel': 'Подписанный отчёт · ответ /invoke',
+      'roles.eyebrow': 'Допуск ≠ когниция ≠ файрвол исполнения',
+      'roles.h2': 'Это не Metis. И не WARDEN.',
+      'roles.lead': 'Четыре разных вопроса — четыре разных компонента. Их смешение и есть то, как контроль цепочки поставок тихо перестаёт работать.',
+      'roles.th.1': 'Компонент', 'roles.th.2': 'На какой вопрос отвечает', 'roles.th.3': 'Когда работает', 'roles.th.4': 'Может заблокировать листинг?',
+      'roles.themis.sub': 'этот репозиторий', 'roles.themis.q': 'Пускать ли эту стороннюю возможность в публичный каталог?',
+      'roles.themis.when': '<b style="color:var(--bronze)">На публикации</b>, один раз на кандидата',
+      'roles.themis.block': 'Да — когда режим допуска Hub равен <code>enforce</code>',
+      'roles.metis.sub': 'уровень верификации', 'roles.metis.q': 'Внутренне ли согласован этот отчёт?',
+      'roles.metis.when': 'Асинхронно, после вердикта', 'roles.metis.block': 'Нет — только совет, никогда не отменяет',
+      'roles.warden.sub': 'файрвол ARGUS', 'roles.warden.q': 'Разрешать ли <em>этот</em> вызов инструмента прямо сейчас?',
+      'roles.warden.when': 'На каждом вызове, на стороне клиента', 'roles.warden.block': 'Нет — он ограничивает локальные вызовы, а не каталог',
+      'roles.lumen.sub': 'граф доверия', 'roles.lumen.q': 'Насколько сеть доверяет этому поставщику?',
+      'roles.lumen.when': 'Непрерывно, по наблюдаемому поведению', 'roles.lumen.block': 'Косвенно — пороги доверия фильтруют обнаружение',
+      'roles.note': 'Чтобы <em>пользоваться</em> экосистемой — искать в Hub, вызывать опубликованные возможности, оракулы, Metis — THEMIS не нужен вовсе. Вы покупатель. THEMIS стоит на пути <em>продажи</em>.',
+      'adm.eyebrow': 'Честная версия',
+      'adm.h2': '«Любой выложит репозиторий и попадёт в каталог» — нет.',
+      'adm.lead': 'Публикация платной возможности в публичном Hub — это многослойный путь. THEMIS лишь последнее, опциональное наложение поверх шлюзов, которые в проде уже включены.',
+      'st.required': 'ОБЯЗАТЕЛЬНО', 'st.prod': 'ВКЛ. В ПРОДЕ', 'st.on': 'ВКЛЮЧЕНО', 'st.operator': 'ОПЕРАТОР',
+      'gate.1.t': 'Учётные данные публикации', 'gate.1.d': 'Токен издателя, выданный оператором. Анонимного пути публикации нет.',
+      'gate.2.t': 'Залог', 'gate.2.d': 'Минимальный залог ≈ $25. Неудачные или неподписанные вызовы могут его срезать.',
+      'gate.3.t': 'Манифест', 'gate.3.d': '<code>publisher_id</code>, <code>provider_pubkey</code>, HTTPS <code>invoke_url</code>, схемы, цена.',
+      'gate.4.t': 'Подписи ответов', 'gate.4.d': 'Ed25519, привязанная к запросу, на каждом вызове — проверяется Hub.',
+      'gate.5.t': 'Пороги доверия', 'gate.5.d': 'Пороги LUMEN на обнаружение и вызов, применяются Hub и клиентами.',
+      'gate.6.t': 'Допуск THEMIS', 'gate.6.d': 'Закрепите ключ аудитора — вердикты записываются (<code>advisory</code>); блокировка требует явного <code>enforce</code>.',
+      'adm.callout': '<b>Alien Monitor никого не допускает.</b> Он показывает телеметрию допуска без досье — уже после того, как Hub записал квитанцию. Ничто на публичной панели не может выдать доступ в каталог.',
+      'course.h2': 'Мини-курс: соберите этого агента сами',
+      'course.lead': 'THEMIS — это готовый эталон для пятиязычного руководства <a href="https://github.com/alexar76/create-aimarket-agent">create-aimarket-agent</a>: двенадцать шагов от пустой папки до осознанной публикации в Hub, с теми же тестами и теми же fail-closed настройками, что выше.',
+      'step.1.t': 'Генерация', 'step.1.d': '<code>uvx create-aimarket-agent</code> · tool + Metis',
+      'step.2.t': 'Решение', 'step.2.d': 'Продуктовое решение раньше кода',
+      'step.3.t': 'Модель', 'step.3.d': 'Строгое досье, лишние поля отклоняются',
+      'step.4.t': 'Находки', 'step.4.d': 'Детерминированная политика → балл → уровень',
+      'step.5.t': 'Metis', 'step.5.d': 'Настоящий, ленивый, неблокирующий совет',
+      'step.6.t': 'Подпись', 'step.6.d': 'Покрыть точный отправленный вход',
+      'step.7.t': 'Тесты', 'step.7.d': 'Поведение, а не только счастливые пути',
+      'step.8.t': 'Сценарий', 'step.8.d': 'Проиграть бизнес-кейс от начала до конца',
+      'step.9.t': 'Опрос', 'step.9.d': 'Запускать Metis, не блокируя пользователя',
+      'step.10.t': 'Контейнер', 'step.10.d': 'Зафиксированные зависимости, непривилегированный образ',
+      'step.11.t': 'Публикация', 'step.11.d': 'Явное действие оператора',
+      'step.12.t': 'Готово', 'step.12.d': 'Критерий готовности и следующие упражнения',
+      'footer.blurb': 'Шлюз допуска на публикации для цепочки поставок AI-агентов AIMarket. Эталонная реализация под MIT — читайте, запускайте, собирайте заново.',
+      'footer.repo': 'Репозиторий', 'footer.docs': 'Документация', 'footer.eco': 'Экосистема',
+      'footer.dashboards': 'Дашборды THEMIS',
+      'footer.mit': 'MIT · подспорье для закупок, а не сертификация соответствия',
+      'hud.boot': 'ЗАПУСК РЕНДЕРЕРА', 'hud.booting': 'инициализация процедурного окружения…',
+      'hud.static': 'СТАТИКА', 'hud.staticmsg': 'сниженная анимация — шлюз отрисован без движения',
+      'phase.INTAKE': 'ПРИЁМ', 'phase.POLICY': 'ПОЛИТИКА', 'phase.VERDICT': 'ВЕРДИКТ',
+      'phase.RECEIPT': 'КВИТАНЦИЯ', 'phase.HANDOFF': 'ПЕРЕДАЧА',
+      'msg.intake': 'чтение ограниченного досье · манифест · разрешения · доказательства',
+      'msg.receipt': 'квитанция ed25519 подписана поверх точного отправленного входа',
+      'msg.policy.approve': 'https · канонический ключ · 2 артефакта с хешем · в рамках бюджета',
+      'msg.policy.review': 'evidence.sbom_missing — high severity, решает человек',
+      'msg.policy.reject': 'открытый http · нет ключа поставщика · код и траты без согласования',
+      'msg.verdict': 'решение {id} · балл {score} · уровень {risk}',
+      'msg.handoff.approve': 'hub → публичный каталог · след в мониторе',
+      'msg.handoff.review': 'hub → очередь к человеку · приложен совет metis',
+      'msg.handoff.reject': 'hub → заблокировано · fail closed, ничего не опубликовано',
+      'kv.decision': 'РЕШЕНИЕ', 'kv.score': 'БАЛЛ', 'kv.risk': 'УРОВЕНЬ РИСКА', 'kv.gate': 'УЧАСТИЕ ЧЕЛОВЕКА',
+      'kv.cost': 'РАСХОД В МЕСЯЦ', 'kv.capability': 'ВОЗМОЖНОСТЬ', 'kv.scope': 'ОБЛАСТЬ', 'kv.attested': 'АТТЕСТОВАНО',
+      'kv.required': 'требуется', 'kv.notrequired': 'не требуется', 'kv.calls': '@ 1 000 вызовов', 'kv.of': '/ 100',
+      'ex.clean': 'НАХОДОК НЕТ · ПОЛИТИКА СОБЛЮДЕНА', 'ex.remediation': 'ЧТО ИСПРАВИТЬ',
+      'ex.tab': 'балл {score} · риск {risk} · {n}', 'ex.findings': 'находок', 'ex.finding': 'находка',
+      'ex.copy': 'КОПИРОВАТЬ', 'ex.copied': 'СКОПИРОВАНО', 'cmd.copy': 'КОПИЯ',
+      'ex.story.approve': 'HTTPS-эндпоинт, канонический ключ Ed25519, доступ к персональным данным за согласованием человека, два артефакта доказательств с привязанным хешем, цена и месячный бюджет в пределах политики.',
+      'ex.story.review': 'Тот же поставщик, но кандидат теперь заявляет исполнение кода. Согласование человека на месте, поэтому critical нет — однако агент, исполняющий код без SBOM, это находка уровня high, а high означает, что решает человек.',
+      'ex.story.reject': 'Открытый HTTP, нет ключа поставщика, исполнение кода и траты денег без участия человека, секреты плюс неограниченная сеть — путь для утечки — и пустое досье доказательств. Четыре critical; балл упирается в ноль.',
+      'ex.note.approve': 'Базовое досье: examples/safe_candidate.json, без изменений.',
+      'ex.note.review': 'Мутация: permissions.execute_code = true, согласование человека сохранено, SBOM отсутствует.',
+      'ex.note.reject': 'Мутация: invoke_url на http://, пустой provider_pubkey, нет согласования, нет доказательств.',
+    },
+  };
+  DICT.es = {
+      'nav.gate': 'La puerta', 'nav.verdicts': 'Veredictos', 'nav.roles': 'Roles', 'nav.admission': 'Admisión',
+      'nav.course': 'Minicurso', 'nav.source': 'Código', 'nav.monitor': 'Monitor', 'nav.dashboards': 'Dashboards',
+      'drawer.verdicts': 'Tres veredictos', 'drawer.roles': 'Roles en el ecosistema', 'drawer.admission': 'Ruta de admisión',
+      'hero.kicker': 'AIMarket · admisión al publicar',
+      'hero.h1': 'Admitir. O no.<br><em>Antes</em> del catálogo.',
+      'hero.tagline': 'THEMIS (Θέμις) es la puerta de admisión firmada al publicar: <code>approve</code> / <code>review</code> / <code>reject</code> a partir de un <b>expediente acotado</b> — política determinista, recibo Ed25519 ligado a la petición y ningún rastreo libre del candidato. No es Metis (cognición). No es WARDEN (cortafuegos en la invocación).',
+      'hero.cta.monitor': 'Verlo en Alien Monitor', 'hero.cta.console': 'Abrir la consola', 'nav.console': 'Consola', 'footer.console': 'Consola de admisión', 'hero.cta.course': 'Reconstruirlo con el minicurso',
+      'hud.decision': 'DECISIÓN', 'hud.score': 'PUNTAJE', 'hud.risk': 'RIESGO', 'hud.findings': 'HALLAZGOS',
+      'lane.approve': 'ruta al catálogo', 'lane.review': 'humano · aviso de Metis', 'lane.reject': 'cierre por defecto',
+      'stage.hint': 'ARRASTRE PARA ORBITAR · RUEDA PARA ZOOM · CLIC EN UN CARRIL',
+      'stage.fallback': 'WebGL no está disponible aquí. La lógica de la puerta es idéntica: lea los veredictos firmados abajo.',
+      'metric.verdicts': 'Veredictos', 'metric.tests': 'Pruebas', 'metric.coverage': 'Cobertura',
+      'metric.receipt': 'Recibo firmado', 'metric.steps': 'Pasos del curso', 'metric.langs': 'Idiomas',
+      'gate.eyebrow': 'Candidato → puerta → recibo',
+      'gate.h2': 'Un expediente entra. Un veredicto firmado sale.',
+      'gate.lead': 'El motor de política decide de inmediato a partir de identidad, transporte, permisos, coste, esquemas y forma de la evidencia. Metis puede añadir una segunda opinión asíncrona, pero nunca anula el veredicto firmado. Alien Monitor solo ve telemetría sin expediente.',
+      'rail.1.t': 'Candidato', 'rail.1.d': 'expediente acotado ≤ 256 KiB',
+      'rail.2.t': 'Política', 'rail.2.d': 'hallazgos deterministas',
+      'rail.3.t': 'Veredicto', 'rail.3.d': 'puntaje · nivel de riesgo',
+      'rail.4.t': 'Recibo', 'rail.4.d': 'Ed25519 ligado a la petición',
+      'rail.5.t': 'Hub', 'rail.5.d': 'catálogo o bloqueo',
+      'rail.6.t': 'Monitor', 'rail.6.d': 'rastro sin expediente',
+      'card.1.t': 'Determinista antes que ingenioso',
+      'card.1.d': 'Los hallazgos ponderados por severidad producen el puntaje. Un solo <code>critical</code> —o cualquier cosa por debajo de 50— rechaza. Un <code>high</code>, o un puntaje bajo el mínimo del comprador, lleva a review.',
+      'card.2.t': 'Un enlace no es evidencia',
+      'card.2.d': 'Las URL se analizan, nunca se descargan: una referencia decorativa no prueba nada y ya no cuenta. Solo los artefactos ligados a un digest cubren el mínimo de evidencia, y una <code>attestation</code> se comprueba sin red contra su propia declaración firmada.',
+      'card.3.t': 'Un recibo que se puede volver a comprobar',
+      'card.3.d': 'La firma de la respuesta cubre la entrada enviada <em>exacta</em> y el resultado, con una clave de proveedor persistente guardada en modo <code>0600</code>.',
+      'card.4.t': 'Capa del Hub, propiedad del operador',
+      'card.4.d': 'Modos <code>off</code> / <code>advisory</code> / <code>enforce</code>. Fije una clave de auditor y los veredictos quedan registrados; bloquear sigue exigiendo un <code>enforce</code> deliberado. THEMIS nunca publica nada por sí solo.',
+      'card.5.t': 'Alineado con OWASP Agentic',
+      'card.5.d': 'Cada hallazgo lleva códigos ASI del OWASP Top 10 para aplicaciones agénticas, así el veredicto llega en el lenguaje que ya usa quien revisa seguridad.',
+      'card.6.t': 'Metis perezoso, nunca bloqueante',
+      'card.6.d': 'Con <code>request_metis</code> el veredicto vuelve al instante y un trabajo consultivo acotado corre detrás de una URL de sondeo. Un almacén compartido permite que cualquier réplica responda cualquier sondeo.',
+      'card.7.t': 'Una declaración firmada ya no se puede negar',
+      'card.7.d': 'Los permisos declarados siguen siendo una declaración, pero quien publica puede firmar la declaración exacta con su clave de proveedor. La política puede exigir esa firma, y una prueba sobre permisos <em>distintos</em> es un hallazgo critical, no un encogimiento de hombros.',
+      'verdicts.eyebrow': 'Salida real, no una maqueta',
+      'verdicts.h2': 'Tres expedientes, tres veredictos firmados',
+      'verdicts.lead': 'Cada informe de abajo es la salida literal del motor de política de este repositorio sobre <code style="font-family:var(--mono);color:var(--bronze)">examples/safe_candidate.json</code> y dos mutaciones suyas. La puerta 3D de arriba se mueve con estos mismos números.',
+      'verdicts.reportlabel': 'Informe firmado · respuesta de /invoke',
+      'roles.eyebrow': 'Admisión ≠ cognición ≠ cortafuegos de ejecución',
+      'roles.h2': 'No es Metis. No es WARDEN.',
+      'roles.lead': 'Cuatro preguntas distintas, cuatro componentes distintos. Confundirlos es la forma en que los controles de la cadena de suministro dejan de funcionar en silencio.',
+      'roles.th.1': 'Componente', 'roles.th.2': 'Pregunta que responde', 'roles.th.3': 'Cuándo actúa', 'roles.th.4': '¿Puede bloquear un listado?',
+      'roles.themis.sub': 'este repositorio', 'roles.themis.q': '¿Puede esta capacidad de terceros entrar en el catálogo público?',
+      'roles.themis.when': '<b style="color:var(--bronze)">Al publicar</b>, una vez por candidato',
+      'roles.themis.block': 'Sí — cuando el modo de admisión del Hub es <code>enforce</code>',
+      'roles.metis.sub': 'nivel de verificación', 'roles.metis.q': '¿Es este informe internamente coherente?',
+      'roles.metis.when': 'De forma asíncrona, tras el veredicto', 'roles.metis.block': 'No — solo aviso, nunca anula',
+      'roles.warden.sub': 'cortafuegos de ARGUS', 'roles.warden.q': '¿Debe permitirse <em>esta</em> llamada a herramienta ahora?',
+      'roles.warden.when': 'En cada invocación, del lado del cliente', 'roles.warden.block': 'No — limita llamadas locales, no el catálogo',
+      'roles.lumen.sub': 'grafo de confianza', 'roles.lumen.q': '¿Cuánto confía la red en este proveedor?',
+      'roles.lumen.when': 'De forma continua, según el comportamiento observado', 'roles.lumen.block': 'Indirectamente — los mínimos de confianza filtran el descubrimiento',
+      'roles.note': 'Para <em>consumir</em> el ecosistema —buscar en el Hub, llamar capacidades publicadas, oráculos, Metis— no hace falta THEMIS. Usted es comprador. THEMIS está en la ruta de <em>venta</em>.',
+      'adm.eyebrow': 'La versión honesta',
+      'adm.h2': '«Cualquiera sube un repositorio y aparece en el catálogo»: no.',
+      'adm.lead': 'Listar una capacidad de pago en el Hub público es una ruta de publicación de varias capas. THEMIS es solo la última capa, opcional, sobre puertas que ya están activas en producción.',
+      'st.required': 'OBLIGATORIO', 'st.prod': 'ACTIVO EN PROD', 'st.on': 'ACTIVO', 'st.operator': 'OPERADOR',
+      'gate.1.t': 'Credencial de publicación', 'gate.1.d': 'Token de publicador emitido por el operador. No hay ruta de publicación anónima.',
+      'gate.2.t': 'Garantía', 'gate.2.d': 'Garantía mínima ≈ 25 USD. Las invocaciones fallidas o sin firma pueden recortarla.',
+      'gate.3.t': 'Manifiesto', 'gate.3.d': '<code>publisher_id</code>, <code>provider_pubkey</code>, <code>invoke_url</code> con HTTPS, esquemas, precio.',
+      'gate.4.t': 'Firmas de respuesta', 'gate.4.d': 'Ed25519 ligado a la petición en cada invocación, verificado por el Hub.',
+      'gate.5.t': 'Mínimos de confianza', 'gate.5.d': 'Umbrales de LUMEN en descubrimiento e invocación, aplicados por el Hub y los clientes.',
+      'gate.6.t': 'Admisión THEMIS', 'gate.6.d': 'Fije una clave de auditor y los veredictos se registran (<code>advisory</code>); bloquear exige un <code>enforce</code> explícito.',
+      'adm.callout': '<b>Alien Monitor no admite a nadie.</b> Muestra telemetría de admisión sin expediente después de que el Hub ya registró un recibo. Nada en un panel público puede conceder acceso al catálogo.',
+      'course.h2': 'Minicurso: construya este agente usted mismo',
+      'course.lead': 'THEMIS es la referencia terminada del tutorial en cinco idiomas <a href="https://github.com/alexar76/create-aimarket-agent">create-aimarket-agent</a>: doce pasos desde una carpeta vacía hasta una publicación deliberada en el Hub, con las mismas pruebas y los mismos valores fail-closed que ve arriba.',
+      'step.1.t': 'Generar', 'step.1.d': '<code>uvx create-aimarket-agent</code> · tool + Metis',
+      'step.2.t': 'Decidir', 'step.2.d': 'La decisión de producto antes del código',
+      'step.3.t': 'Modelar', 'step.3.d': 'Expediente estricto, campos desconocidos rechazados',
+      'step.4.t': 'Hallazgos', 'step.4.d': 'Política determinista → puntaje → nivel',
+      'step.5.t': 'Metis', 'step.5.d': 'Aviso real, perezoso y no bloqueante',
+      'step.6.t': 'Firmar', 'step.6.d': 'Cubrir la entrada enviada exacta',
+      'step.7.t': 'Probar', 'step.7.d': 'Comportamiento, no solo caminos felices',
+      'step.8.t': 'Escenario', 'step.8.d': 'Recorrer el caso de negocio de punta a punta',
+      'step.9.t': 'Sondear', 'step.9.d': 'Ejecutar Metis sin bloquear al usuario',
+      'step.10.t': 'Contenedor', 'step.10.d': 'Dependencias fijadas, imagen sin privilegios',
+      'step.11.t': 'Publicar', 'step.11.d': 'Una acción explícita del operador',
+      'step.12.t': 'Listo', 'step.12.d': 'Definición de terminado y siguientes ejercicios',
+      'footer.blurb': 'Puerta de admisión al publicar para la cadena de suministro de agentes de IA de AIMarket. Implementación de referencia con licencia MIT: léala, ejecútela, reconstrúyala.',
+      'footer.repo': 'Repositorio', 'footer.docs': 'Documentación', 'footer.eco': 'Ecosistema',
+      'footer.dashboards': 'Dashboards THEMIS',
+      'footer.mit': 'MIT · una ayuda para compras, no una certificación de cumplimiento',
+      'hud.boot': 'INICIANDO RENDERIZADOR', 'hud.booting': 'inicializando el entorno procedural…',
+      'hud.static': 'ESTÁTICO', 'hud.staticmsg': 'movimiento reducido — la puerta se dibuja sin animación',
+      'phase.INTAKE': 'RECEPCIÓN', 'phase.POLICY': 'POLÍTICA', 'phase.VERDICT': 'VEREDICTO',
+      'phase.RECEIPT': 'RECIBO', 'phase.HANDOFF': 'ENTREGA',
+      'msg.intake': 'leyendo expediente acotado · manifiesto · permisos · evidencia',
+      'msg.receipt': 'recibo ed25519 firmado sobre la entrada enviada exacta',
+      'msg.policy.approve': 'https · clave canónica · 2 artefactos con digest · dentro del presupuesto',
+      'msg.policy.review': 'evidence.sbom_missing — severidad high, decide un humano',
+      'msg.policy.reject': 'http en claro · sin clave de proveedor · código y gasto sin aprobación',
+      'msg.verdict': 'decisión {id} · puntaje {score} · nivel {risk}',
+      'msg.handoff.approve': 'hub → catálogo público · rastro en el monitor',
+      'msg.handoff.review': 'hub → cola humana · aviso de metis adjunto',
+      'msg.handoff.reject': 'hub → bloqueado · fail closed, nada listado',
+      'kv.decision': 'DECISIÓN', 'kv.score': 'PUNTAJE', 'kv.risk': 'NIVEL DE RIESGO', 'kv.gate': 'CONTROL HUMANO',
+      'kv.cost': 'COSTE MENSUAL', 'kv.capability': 'CAPACIDAD', 'kv.scope': 'ALCANCE', 'kv.attested': 'ATESTADO',
+      'kv.required': 'requerido', 'kv.notrequired': 'no requerido', 'kv.calls': '@ 1 000 llamadas', 'kv.of': '/ 100',
+      'ex.clean': 'SIN HALLAZGOS · POLÍTICA SATISFECHA', 'ex.remediation': 'REMEDIACIÓN',
+      'ex.tab': 'puntaje {score} · riesgo {risk} · {n}', 'ex.findings': 'hallazgos', 'ex.finding': 'hallazgo',
+      'ex.copy': 'COPIAR JSON', 'ex.copied': 'COPIADO', 'cmd.copy': 'COPIAR',
+      'ex.story.approve': 'Endpoint HTTPS, clave Ed25519 canónica, acceso a datos personales tras aprobación humana, dos artefactos de evidencia ligados a un digest, precio y presupuesto mensual dentro de la política.',
+      'ex.story.review': 'El mismo proveedor, pero ahora el candidato declara ejecución de código. La aprobación humana está puesta, así que nada es critical; sin embargo, un agente que ejecuta código sin SBOM es un hallazgo de severidad high, y high significa que decide una persona.',
+      'ex.story.reject': 'HTTP en claro, sin clave de proveedor, ejecución de código y gasto de dinero sin control humano, secretos más red sin restricciones —una vía de exfiltración— y un expediente de evidencia vacío. Cuatro critical; el puntaje toca cero.',
+      'ex.note.approve': 'Expediente base: examples/safe_candidate.json, sin modificar.',
+      'ex.note.review': 'Mutación: permissions.execute_code = true, aprobación humana conservada, sin evidencia SBOM.',
+      'ex.note.reject': 'Mutación: invoke_url con http://, provider_pubkey vacío, sin control de aprobación, sin evidencia.',
+  };
+  DICT.fr = {
+      'nav.gate': 'La porte', 'nav.verdicts': 'Verdicts', 'nav.roles': 'Rôles', 'nav.admission': 'Admission',
+      'nav.course': 'Mini-cours', 'nav.source': 'Sources', 'nav.monitor': 'Monitor', 'nav.dashboards': 'Tableaux de bord',
+      'drawer.verdicts': 'Trois verdicts', 'drawer.roles': 'Rôles dans l’écosystème', 'drawer.admission': 'Parcours d’admission',
+      'hero.kicker': 'AIMarket · admission à la publication',
+      'hero.h1': 'Admettre. Ou pas.<br><em>Avant</em> le catalogue.',
+      'hero.tagline': 'THEMIS (Θέμις) est la porte d’admission signée à la publication : <code>approve</code> / <code>review</code> / <code>reject</code> à partir d’un <b>dossier borné</b> — politique déterministe, reçu Ed25519 lié à la requête, et aucune exploration libre du candidat. Ce n’est pas Metis (cognition). Ce n’est pas WARDEN (pare-feu à l’invocation).',
+      'hero.cta.monitor': 'Le voir sur Alien Monitor', 'hero.cta.console': 'Ouvrir la console', 'nav.console': 'Console', 'footer.console': 'Console d’admission', 'hero.cta.course': 'Le reconstruire avec le mini-cours',
+      'hud.decision': 'DÉCISION', 'hud.score': 'SCORE', 'hud.risk': 'RISQUE', 'hud.findings': 'CONSTATS',
+      'lane.approve': 'voie du catalogue', 'lane.review': 'humain · avis de Metis', 'lane.reject': 'fermeture par défaut',
+      'stage.hint': 'GLISSER POUR ORBITER · MOLETTE POUR ZOOMER · CLIC SUR UNE VOIE',
+      'stage.fallback': 'WebGL n’est pas disponible ici. La logique de la porte est identique — lisez les verdicts signés ci-dessous.',
+      'metric.verdicts': 'Verdicts', 'metric.tests': 'Tests', 'metric.coverage': 'Couverture',
+      'metric.receipt': 'Reçu signé', 'metric.steps': 'Étapes du cours', 'metric.langs': 'Langues',
+      'gate.eyebrow': 'Candidat → porte → reçu',
+      'gate.h2': 'Un dossier entre. Un verdict signé sort.',
+      'gate.lead': 'Le moteur de politique décide immédiatement à partir de l’identité, du transport, des permissions, du coût, des schémas et de la forme des preuves. Metis peut ajouter un second avis asynchrone, mais il ne remplace jamais le verdict signé. Alien Monitor ne voit qu’une télémétrie sans dossier.',
+      'rail.1.t': 'Candidat', 'rail.1.d': 'dossier borné ≤ 256 Kio',
+      'rail.2.t': 'Politique', 'rail.2.d': 'constats déterministes',
+      'rail.3.t': 'Verdict', 'rail.3.d': 'score · niveau de risque',
+      'rail.4.t': 'Reçu', 'rail.4.d': 'Ed25519 lié à la requête',
+      'rail.5.t': 'Hub', 'rail.5.d': 'catalogue ou blocage',
+      'rail.6.t': 'Monitor', 'rail.6.d': 'trace sans dossier',
+      'card.1.t': 'Déterministe avant d’être astucieux',
+      'card.1.d': 'Les constats pondérés par sévérité produisent le score. Un seul <code>critical</code> — ou tout ce qui est sous 50 — rejette. Un <code>high</code>, ou un score sous le seuil de l’acheteur, part en review.',
+      'card.2.t': 'Un lien n’est pas une preuve',
+      'card.2.d': 'Les URL sont analysées, jamais récupérées : une référence décorative ne prouve rien et ne compte plus. Seuls les artefacts liés à une empreinte satisfont le seuil de preuves, et une <code>attestation</code> est vérifiée hors ligne contre sa propre déclaration signée.',
+      'card.3.t': 'Un reçu que l’on peut revérifier',
+      'card.3.d': 'La signature de la réponse couvre l’entrée soumise <em>exacte</em> et le résultat, avec une clé de fournisseur persistante stockée en mode <code>0600</code>.',
+      'card.4.t': 'Surcouche du Hub, propriété de l’opérateur',
+      'card.4.d': 'Modes <code>off</code> / <code>advisory</code> / <code>enforce</code>. Épinglez une clé d’auditeur et les verdicts sont enregistrés ; bloquer exige toujours un <code>enforce</code> délibéré. THEMIS ne publie jamais rien de lui-même.',
+      'card.5.t': 'Aligné sur OWASP Agentic',
+      'card.5.d': 'Chaque constat porte des codes ASI du Top 10 OWASP pour applications agentiques : le verdict arrive dans le langage qu’un relecteur sécurité utilise déjà.',
+      'card.6.t': 'Metis paresseux, jamais bloquant',
+      'card.6.d': 'Avec <code>request_metis</code>, le verdict revient immédiatement et une tâche consultative bornée tourne derrière une URL de sondage. Un stockage partagé permet à n’importe quelle réplique de répondre à n’importe quel sondage.',
+      'card.7.t': 'Une déclaration signée ne se renie plus',
+      'card.7.d': 'Les permissions déclarées restent une déclaration — mais l’éditeur peut signer la déclaration exacte avec sa clé de fournisseur. La politique peut exiger cette signature, et une preuve portant sur des permissions <em>différentes</em> est un constat critical, pas un haussement d’épaules.',
+      'verdicts.eyebrow': 'Sortie réelle, pas une maquette',
+      'verdicts.h2': 'Trois dossiers, trois verdicts signés',
+      'verdicts.lead': 'Chaque rapport ci-dessous est la sortie littérale du moteur de politique de ce dépôt sur <code style="font-family:var(--mono);color:var(--bronze)">examples/safe_candidate.json</code> et deux de ses mutations. La porte 3D ci-dessus est pilotée par ces mêmes chiffres.',
+      'verdicts.reportlabel': 'Rapport signé · réponse de /invoke',
+      'roles.eyebrow': 'Admission ≠ cognition ≠ pare-feu d’exécution',
+      'roles.h2': 'Ce n’est pas Metis. Ni WARDEN.',
+      'roles.lead': 'Quatre questions différentes, quatre composants différents. Les confondre, c’est exactement ainsi que les contrôles de chaîne d’approvisionnement cessent silencieusement de fonctionner.',
+      'roles.th.1': 'Composant', 'roles.th.2': 'Question à laquelle il répond', 'roles.th.3': 'Quand il agit', 'roles.th.4': 'Peut-il bloquer une mise en catalogue ?',
+      'roles.themis.sub': 'ce dépôt', 'roles.themis.q': 'Cette capacité tierce peut-elle entrer dans le catalogue public ?',
+      'roles.themis.when': '<b style="color:var(--bronze)">À la publication</b>, une fois par candidat',
+      'roles.themis.block': 'Oui — lorsque le mode d’admission du Hub est <code>enforce</code>',
+      'roles.metis.sub': 'niveau de vérification', 'roles.metis.q': 'Ce rapport est-il cohérent en interne ?',
+      'roles.metis.when': 'De façon asynchrone, après le verdict', 'roles.metis.block': 'Non — avis seulement, jamais de remplacement',
+      'roles.warden.sub': 'pare-feu d’ARGUS', 'roles.warden.q': 'Faut-il autoriser <em>cet</em> appel d’outil maintenant ?',
+      'roles.warden.when': 'À chaque invocation, côté client', 'roles.warden.block': 'Non — il filtre les appels locaux, pas le catalogue',
+      'roles.lumen.sub': 'graphe de confiance', 'roles.lumen.q': 'Quelle confiance le réseau accorde-t-il à ce fournisseur ?',
+      'roles.lumen.when': 'En continu, selon le comportement observé', 'roles.lumen.block': 'Indirectement — les seuils de confiance filtrent la découverte',
+      'roles.note': 'Pour <em>consommer</em> l’écosystème — chercher dans le Hub, appeler des capacités publiées, des oracles, Metis — THEMIS n’est pas nécessaire. Vous êtes acheteur. THEMIS se trouve sur le chemin de la <em>vente</em>.',
+      'adm.eyebrow': 'La version honnête',
+      'adm.h2': '« N’importe qui dépose un dépôt et se retrouve au catalogue » — non.',
+      'adm.lead': 'Mettre au catalogue une capacité payante sur le Hub public est un parcours de publication à plusieurs couches. THEMIS n’est que la dernière couche, optionnelle, au-dessus de portes déjà actives en production.',
+      'st.required': 'REQUIS', 'st.prod': 'ACTIF EN PROD', 'st.on': 'ACTIF', 'st.operator': 'OPÉRATEUR',
+      'gate.1.t': 'Identifiant de publication', 'gate.1.d': 'Jeton d’éditeur émis par l’opérateur. Il n’existe aucune voie de publication anonyme.',
+      'gate.2.t': 'Dépôt de garantie', 'gate.2.d': 'Caution minimale ≈ 25 USD. Des invocations échouées ou non signées peuvent l’entamer.',
+      'gate.3.t': 'Manifeste', 'gate.3.d': '<code>publisher_id</code>, <code>provider_pubkey</code>, <code>invoke_url</code> en HTTPS, schémas, prix.',
+      'gate.4.t': 'Signatures de réponse', 'gate.4.d': 'Ed25519 lié à la requête à chaque invocation, vérifié par le Hub.',
+      'gate.5.t': 'Seuils de confiance', 'gate.5.d': 'Seuils LUMEN sur la découverte et l’invocation, appliqués par le Hub et les clients.',
+      'gate.6.t': 'Admission THEMIS', 'gate.6.d': 'Épinglez une clé d’auditeur et les verdicts sont enregistrés (<code>advisory</code>) ; bloquer demande un <code>enforce</code> explicite.',
+      'adm.callout': '<b>Alien Monitor n’admet personne.</b> Il affiche une télémétrie d’admission sans dossier, après que le Hub a déjà enregistré un reçu. Rien sur un tableau de bord public ne peut accorder l’accès au catalogue.',
+      'course.h2': 'Mini-cours : construisez cet agent vous-même',
+      'course.lead': 'THEMIS est la référence achevée du tutoriel en cinq langues <a href="https://github.com/alexar76/create-aimarket-agent">create-aimarket-agent</a> : douze étapes, d’un dossier vide à une publication délibérée sur le Hub, avec les mêmes tests et les mêmes réglages fail-closed que ci-dessus.',
+      'step.1.t': 'Générer', 'step.1.d': '<code>uvx create-aimarket-agent</code> · tool + Metis',
+      'step.2.t': 'Décider', 'step.2.d': 'La décision produit avant le code',
+      'step.3.t': 'Modéliser', 'step.3.d': 'Dossier strict, champs inconnus rejetés',
+      'step.4.t': 'Constats', 'step.4.d': 'Politique déterministe → score → niveau',
+      'step.5.t': 'Metis', 'step.5.d': 'Avis réel, paresseux, non bloquant',
+      'step.6.t': 'Signer', 'step.6.d': 'Couvrir l’entrée soumise exacte',
+      'step.7.t': 'Tester', 'step.7.d': 'Le comportement, pas seulement les cas heureux',
+      'step.8.t': 'Scénario', 'step.8.d': 'Parcourir le cas métier de bout en bout',
+      'step.9.t': 'Sonder', 'step.9.d': 'Lancer Metis sans bloquer l’utilisateur',
+      'step.10.t': 'Conteneuriser', 'step.10.d': 'Dépendances figées, image non privilégiée',
+      'step.11.t': 'Publier', 'step.11.d': 'Une action explicite de l’opérateur',
+      'step.12.t': 'Terminé', 'step.12.d': 'Définition du fini, puis exercices suivants',
+      'footer.blurb': 'Porte d’admission à la publication pour la chaîne d’approvisionnement des agents IA d’AIMarket. Implémentation de référence sous licence MIT — lisez-la, exécutez-la, reconstruisez-la.',
+      'footer.repo': 'Dépôt', 'footer.docs': 'Documentation', 'footer.eco': 'Écosystème',
+      'footer.dashboards': 'Tableaux de bord THEMIS',
+      'footer.mit': 'MIT · une aide à l’achat, pas une certification de conformité',
+      'hud.boot': 'DÉMARRAGE DU MOTEUR', 'hud.booting': 'initialisation de l’environnement procédural…',
+      'hud.static': 'STATIQUE', 'hud.staticmsg': 'mouvement réduit — la porte est rendue sans animation',
+      'phase.INTAKE': 'RÉCEPTION', 'phase.POLICY': 'POLITIQUE', 'phase.VERDICT': 'VERDICT',
+      'phase.RECEIPT': 'REÇU', 'phase.HANDOFF': 'TRANSMISSION',
+      'msg.intake': 'lecture du dossier borné · manifeste · permissions · preuves',
+      'msg.receipt': 'reçu ed25519 signé sur l’entrée soumise exacte',
+      'msg.policy.approve': 'https · clé canonique · 2 artefacts à empreinte · dans le budget',
+      'msg.policy.review': 'evidence.sbom_missing — sévérité high, un humain décide',
+      'msg.policy.reject': 'http en clair · pas de clé fournisseur · code et dépense sans approbation',
+      'msg.verdict': 'décision {id} · score {score} · niveau {risk}',
+      'msg.handoff.approve': 'hub → catalogue public · trace du monitor',
+      'msg.handoff.review': 'hub → file humaine · avis metis joint',
+      'msg.handoff.reject': 'hub → bloqué · fail closed, rien au catalogue',
+      'kv.decision': 'DÉCISION', 'kv.score': 'SCORE', 'kv.risk': 'NIVEAU DE RISQUE', 'kv.gate': 'CONTRÔLE HUMAIN',
+      'kv.cost': 'COÛT MENSUEL', 'kv.capability': 'CAPACITÉ', 'kv.scope': 'PÉRIMÈTRE', 'kv.attested': 'ATTESTÉ',
+      'kv.required': 'requis', 'kv.notrequired': 'non requis', 'kv.calls': '@ 1 000 appels', 'kv.of': '/ 100',
+      'ex.clean': 'AUCUN CONSTAT · POLITIQUE SATISFAITE', 'ex.remediation': 'REMÉDIATION',
+      'ex.tab': 'score {score} · risque {risk} · {n}', 'ex.findings': 'constats', 'ex.finding': 'constat',
+      'ex.copy': 'COPIER LE JSON', 'ex.copied': 'COPIÉ', 'cmd.copy': 'COPIER',
+      'ex.story.approve': 'Point d’accès HTTPS, clé Ed25519 canonique, accès aux données personnelles derrière une approbation humaine, deux artefacts de preuve liés à une empreinte, prix et budget mensuel dans les limites de la politique.',
+      'ex.story.review': 'Le même fournisseur, mais le candidat déclare désormais l’exécution de code. L’approbation humaine est en place, donc rien n’est critical — pourtant un agent qui exécute du code sans SBOM est un constat de sévérité high, et high signifie qu’un humain décide.',
+      'ex.story.reject': 'HTTP en clair, pas de clé fournisseur, exécution de code et dépenses sans contrôle humain, secrets plus réseau sans restriction — une voie d’exfiltration — et un dossier de preuves vide. Quatre critical ; le score tombe à zéro.',
+      'ex.note.approve': 'Dossier de référence : examples/safe_candidate.json, non modifié.',
+      'ex.note.review': 'Mutation : permissions.execute_code = true, approbation humaine conservée, aucune preuve SBOM.',
+      'ex.note.reject': 'Mutation : invoke_url en http://, provider_pubkey vide, aucun contrôle d’approbation, aucune preuve.',
+  };
+  DICT.zh = {
+      'nav.gate': '门控', 'nav.verdicts': '裁决', 'nav.roles': '角色', 'nav.admission': '准入',
+      'nav.course': '微课程', 'nav.source': '源码', 'nav.monitor': 'Monitor', 'nav.dashboards': '仪表盘',
+      'drawer.verdicts': '三种裁决', 'drawer.roles': '生态中的角色', 'drawer.admission': '准入路径',
+      'hero.kicker': 'AIMarket · 发布准入',
+      'hero.h1': '准入，或者不。<br>在进入目录<em>之前</em>。',
+      'hero.tagline': 'THEMIS（Θέμις）是发布时的签名准入门控：基于<b>受限档案</b>给出 <code>approve</code> / <code>review</code> / <code>reject</code> —— 确定性策略、与请求绑定的 Ed25519 收据，且绝不主动抓取候选方。它不是 Metis（认知），也不是 WARDEN（调用时防火墙）。',
+      'hero.cta.monitor': '在 Alien Monitor 中查看', 'hero.cta.console': '打开控制台', 'nav.console': '控制台', 'footer.console': '准入控制台', 'hero.cta.course': '按微课程重建',
+      'hud.decision': '决定', 'hud.score': '评分', 'hud.risk': '风险', 'hud.findings': '发现',
+      'lane.approve': '进入目录', 'lane.review': '人工 · Metis 建议', 'lane.reject': '默认拒绝',
+      'stage.hint': '拖动旋转 · 滚轮缩放 · 点击通道',
+      'stage.fallback': '此处无法使用 WebGL。门控逻辑完全相同 —— 请阅读下方的签名裁决。',
+      'metric.verdicts': '裁决', 'metric.tests': '测试', 'metric.coverage': '覆盖率',
+      'metric.receipt': '签名收据', 'metric.steps': '课程步骤', 'metric.langs': '语言',
+      'gate.eyebrow': '候选 → 门控 → 收据',
+      'gate.h2': '一份档案进入，一份签名裁决产出。',
+      'gate.lead': '策略引擎依据身份、传输、权限、成本、模式与证据形态立即作出判断。Metis 可以异步给出第二意见，但永远不会覆盖签名裁决。Alien Monitor 只能看到不含档案的遥测数据。',
+      'rail.1.t': '候选', 'rail.1.d': '受限档案 ≤ 256 KiB',
+      'rail.2.t': '策略', 'rail.2.d': '确定性发现',
+      'rail.3.t': '裁决', 'rail.3.d': '评分 · 风险等级',
+      'rail.4.t': '收据', 'rail.4.d': '与请求绑定的 Ed25519',
+      'rail.5.t': 'Hub', 'rail.5.d': '进入目录或被拦截',
+      'rail.6.t': 'Monitor', 'rail.6.d': '不含档案的轨迹',
+      'card.1.t': '先确定性，再谈聪明',
+      'card.1.d': '按严重度加权的发现构成评分。只要出现一个 <code>critical</code> —— 或评分低于 50 —— 即为拒绝。出现 <code>high</code>，或评分低于买方下限，则转入 review。',
+      'card.2.t': '链接不等于证据',
+      'card.2.d': 'URL 只做解析，从不抓取 —— 因此装饰性的引用什么也证明不了，也不再计入。只有绑定摘要的工件才能满足证据下限，而 <code>attestation</code> 会离线对照其自身的签名声明进行校验。',
+      'card.3.t': '可复核的收据',
+      'card.3.d': '响应签名覆盖<em>完全一致</em>的提交输入与结果，使用以 <code>0600</code> 权限保存的持久化提供方密钥。',
+      'card.4.t': 'Hub 覆盖层由运营方掌握',
+      'card.4.d': '模式为 <code>off</code> / <code>advisory</code> / <code>enforce</code>。固定审计方密钥后裁决即被记录；真正拦截仍需显式设置 <code>enforce</code>。THEMIS 自身从不发布任何内容。',
+      'card.5.t': '对齐 OWASP Agentic',
+      'card.5.d': '每条发现都带有 OWASP 智能体应用十大风险的 ASI 编号，裁决以安全评审人员已在使用的语言呈现。',
+      'card.6.t': '惰性 Metis，从不阻塞',
+      'card.6.d': '使用 <code>request_metis</code> 时裁决立即返回，受限的建议任务在轮询 URL 之后运行。共享的任务存储让任意副本都能回答任意轮询。',
+      'card.7.t': '签名过的声明无法再否认',
+      'card.7.d': '声明的权限仍然只是声明 —— 但发布方可以用提供方密钥签署这份确切声明。策略可以要求该签名，而覆盖<em>其他</em>权限的证明属于 critical 发现，而不是一句轻描淡写。',
+      'verdicts.eyebrow': '真实输出，而非样稿',
+      'verdicts.h2': '三份档案，三份签名裁决',
+      'verdicts.lead': '下面每份报告都是本仓库策略引擎对 <code style="font-family:var(--mono);color:var(--bronze)">examples/safe_candidate.json</code> 及其两个变体的原样输出。上方的 3D 门控正是由这些数字驱动。',
+      'verdicts.reportlabel': '签名报告 · /invoke 响应',
+      'roles.eyebrow': '准入 ≠ 认知 ≠ 运行时防火墙',
+      'roles.h2': '不是 Metis，也不是 WARDEN。',
+      'roles.lead': '四个不同的问题，四个不同的组件。把它们混为一谈，正是供应链控制悄悄失效的方式。',
+      'roles.th.1': '组件', 'roles.th.2': '回答什么问题', 'roles.th.3': '何时运行', 'roles.th.4': '能否拦截上架？',
+      'roles.themis.sub': '本仓库', 'roles.themis.q': '这项第三方能力可以进入公共目录吗？',
+      'roles.themis.when': '<b style="color:var(--bronze)">发布时</b>，每个候选一次',
+      'roles.themis.block': '可以 —— 当 Hub 准入模式为 <code>enforce</code> 时',
+      'roles.metis.sub': '验证层', 'roles.metis.q': '这份报告内部是否自洽？',
+      'roles.metis.when': '异步进行，在裁决之后', 'roles.metis.block': '不能 —— 仅为建议，永不覆盖',
+      'roles.warden.sub': 'ARGUS 防火墙', 'roles.warden.q': '<em>这次</em>工具调用现在该被允许吗？',
+      'roles.warden.when': '每次调用，在客户端', 'roles.warden.block': '不能 —— 它管的是本地调用，不是目录',
+      'roles.lumen.sub': '信任图谱', 'roles.lumen.q': '网络对这个提供方的信任度有多高？',
+      'roles.lumen.when': '持续进行，基于可观测行为', 'roles.lumen.block': '间接可以 —— 信任下限会过滤发现',
+      'roles.note': '若只是<em>使用</em>生态 —— 搜索 Hub、调用已上架能力、预言机、Metis —— 完全不需要 THEMIS。你是买方。THEMIS 位于<em>卖出</em>这条路径上。',
+      'adm.eyebrow': '诚实的版本',
+      'adm.h2': '「随便扔个仓库就能上目录」—— 并非如此。',
+      'adm.lead': '在公共 Hub 上架付费能力是一条多层发布路径。THEMIS 只是最后一层、可选的一层，位于生产环境中已经启用的那些门控之上。',
+      'st.required': '必需', 'st.prod': '生产已启用', 'st.on': '已启用', 'st.operator': '运营方',
+      'gate.1.t': '发布凭据', 'gate.1.d': '由运营方签发的发布方令牌。不存在匿名发布路径。',
+      'gate.2.t': '保证金', 'gate.2.d': '最低保证金约 25 美元。失败或未签名的调用可能导致罚没。',
+      'gate.3.t': '清单', 'gate.3.d': '<code>publisher_id</code>、<code>provider_pubkey</code>、HTTPS 的 <code>invoke_url</code>、模式、价格。',
+      'gate.4.t': '响应签名', 'gate.4.d': '每次调用都需与请求绑定的 Ed25519 签名，由 Hub 校验。',
+      'gate.5.t': '信任下限', 'gate.5.d': 'LUMEN 在发现与调用环节的阈值，由 Hub 与客户端执行。',
+      'gate.6.t': 'THEMIS 准入', 'gate.6.d': '固定审计方密钥后裁决即被记录（<code>advisory</code>）；拦截需要显式的 <code>enforce</code>。',
+      'adm.callout': '<b>Alien Monitor 不准入任何人。</b>它只在 Hub 已经记录收据之后，展示不含档案的准入遥测。公共看板上的任何内容都无法授予目录访问权。',
+      'course.h2': '微课程：亲手构建这个智能体',
+      'course.lead': 'THEMIS 是五语言教程 <a href="https://github.com/alexar76/create-aimarket-agent">create-aimarket-agent</a> 的完整参考实现：十二个步骤，从空目录到一次有意识的 Hub 发布，测试与 fail-closed 默认值都与上面所见一致。',
+      'step.1.t': '生成', 'step.1.d': '<code>uvx create-aimarket-agent</code> · tool + Metis',
+      'step.2.t': '决策', 'step.2.d': '先写产品决策，再写代码',
+      'step.3.t': '建模', 'step.3.d': '严格档案，未知字段一律拒绝',
+      'step.4.t': '发现', 'step.4.d': '确定性策略 → 评分 → 等级',
+      'step.5.t': 'Metis', 'step.5.d': '真实、惰性、不阻塞的建议',
+      'step.6.t': '签名', 'step.6.d': '覆盖完全一致的提交输入',
+      'step.7.t': '测试', 'step.7.d': '测行为，而不只是顺利路径',
+      'step.8.t': '场景', 'step.8.d': '端到端跑通业务用例',
+      'step.9.t': '轮询', 'step.9.d': '运行 Metis 而不阻塞用户',
+      'step.10.t': '容器化', 'step.10.d': '锁定依赖，非特权镜像',
+      'step.11.t': '发布', 'step.11.d': '一次显式的运营方操作',
+      'step.12.t': '完成', 'step.12.d': '完成的定义，以及后续练习',
+      'footer.blurb': '面向 AIMarket AI 智能体供应链的发布准入门控。MIT 许可的参考实现 —— 阅读它、运行它、重建它。',
+      'footer.repo': '仓库', 'footer.docs': '文档', 'footer.eco': '生态',
+      'footer.dashboards': 'THEMIS 仪表盘',
+      'footer.mit': 'MIT · 采购辅助工具，而非合规认证',
+      'hud.boot': '渲染器启动中', 'hud.booting': '正在初始化程序化环境…',
+      'hud.static': '静态', 'hud.staticmsg': '已降低动效 —— 门控以静态方式渲染',
+      'phase.INTAKE': '接收', 'phase.POLICY': '策略', 'phase.VERDICT': '裁决',
+      'phase.RECEIPT': '收据', 'phase.HANDOFF': '移交',
+      'msg.intake': '读取受限档案 · 清单 · 权限 · 证据',
+      'msg.receipt': 'ed25519 收据已对完全一致的提交输入签名',
+      'msg.policy.approve': 'https · 规范密钥 · 2 个带摘要的工件 · 在预算内',
+      'msg.policy.review': 'evidence.sbom_missing —— high 级别，由人工决定',
+      'msg.policy.reject': '明文 http · 无提供方密钥 · 代码与支出均未经批准',
+      'msg.verdict': '决定 {id} · 评分 {score} · 等级 {risk}',
+      'msg.handoff.approve': 'hub → 公共目录 · monitor 轨迹',
+      'msg.handoff.review': 'hub → 人工队列 · 已附 metis 建议',
+      'msg.handoff.reject': 'hub → 已拦截 · fail closed，未上架任何内容',
+      'kv.decision': '决定', 'kv.score': '评分', 'kv.risk': '风险等级', 'kv.gate': '人工把关',
+      'kv.cost': '每月成本', 'kv.capability': '能力', 'kv.scope': '范围', 'kv.attested': '已证明',
+      'kv.required': '需要', 'kv.notrequired': '不需要', 'kv.calls': '@ 1 000 次调用', 'kv.of': '/ 100',
+      'ex.clean': '无发现 · 策略已满足', 'ex.remediation': '修复建议',
+      'ex.tab': '评分 {score} · 风险 {risk} · {n}', 'ex.findings': '条发现', 'ex.finding': '条发现',
+      'ex.copy': '复制 JSON', 'ex.copied': '已复制', 'cmd.copy': '复制',
+      'ex.story.approve': 'HTTPS 端点、规范的 Ed25519 密钥、个人数据访问置于人工批准之后、两个绑定摘要的证据工件，价格与月度预算均在策略范围内。',
+      'ex.story.review': '同一家提供方，但候选现在声明会执行代码。人工批准已就位，因此没有 critical —— 然而一个执行代码却没有 SBOM 的智能体属于 high 级别发现，而 high 意味着由人来决定。',
+      'ex.story.reject': '明文 HTTP、没有提供方密钥、执行代码与花钱都没有人工把关、访问密钥加上不受限网络 —— 一条外泄通道 —— 以及一份空白的证据档案。四个 critical；评分触底为零。',
+      'ex.note.approve': '基线档案：examples/safe_candidate.json，未作修改。',
+      'ex.note.review': '变体：permissions.execute_code = true，保留人工批准，无 SBOM 证据。',
+      'ex.note.reject': '变体：invoke_url 使用 http://、provider_pubkey 为空、无批准把关、无证据。',
+  };
+
+  const META = {
+    en: { title: 'THEMIS — Admit. Or don’t. Before the catalogue.',
+          desc: 'THEMIS is AIMarket’s publish-time admission gate: signed approve / review / reject for third-party agents from a bounded dossier.' },
+    ru: { title: 'THEMIS — Допустить. Или нет. До каталога.',
+          desc: 'THEMIS — шлюз допуска публикаций AIMarket: подписанные approve / review / reject для сторонних агентов по ограниченному досье.' },
+    es: { title: 'THEMIS — Admitir. O no. Antes del catálogo.',
+          desc: 'THEMIS es la puerta de admisión al publicar de AIMarket: approve / review / reject firmados para agentes de terceros a partir de un expediente acotado.' },
+    fr: { title: 'THEMIS — Admettre. Ou pas. Avant le catalogue.',
+          desc: 'THEMIS est la porte d’admission à la publication d’AIMarket : approve / review / reject signés pour des agents tiers à partir d’un dossier borné.' },
+    zh: { title: 'THEMIS —— 准入，或者不。在进入目录之前。',
+          desc: 'THEMIS 是 AIMarket 的发布准入门控：基于受限档案，为第三方智能体给出签名的 approve / review / reject。' },
+  };
+
+  /* Snapshot English from the markup, so the default copy is never duplicated
+     in a dictionary and cannot drift away from what the page actually says. */
+  const nodes = [...document.querySelectorAll('[data-i18n]')];
+  const EN = Object.assign({}, JS_EN);
+  nodes.forEach((node) => { EN[node.dataset.i18n] = node.innerHTML; });
+
+  const listeners = [];
+  let lang = 'en';
+
+  function t(key, vars) {
+    const table = lang === 'en' ? EN : DICT[lang] || EN;
+    let value = table[key];
+    if (value === undefined) value = EN[key];
+    if (value === undefined) return key;
+    if (vars) {
+      for (const name of Object.keys(vars)) value = value.split('{' + name + '}').join(vars[name]);
+    }
+    return value;
+  }
+
+  function apply(next, persist) {
+    lang = next === 'en' || DICT[next] ? next : 'en';
+    nodes.forEach((node) => { node.innerHTML = t(node.dataset.i18n); });
+    document.documentElement.lang = lang;
+    const meta = META[lang];
+    if (meta) {
+      document.title = meta.title;
+      const description = document.querySelector('meta[name="description"]');
+      if (description) description.setAttribute('content', meta.desc);
+    }
+    document.querySelectorAll('[data-lang]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.lang === lang));
+    });
+    if (persist) { try { localStorage.setItem('themis-lang', lang); } catch (_) {} }
+    listeners.forEach((fn) => { try { fn(lang); } catch (_) {} });
+  }
+
+  window.__i18n = {
+    t,
+    get lang() { return lang; },
+    langs: ['en', 'ru', 'es', 'fr', 'zh'],
+    apply,
+    onChange(fn) { listeners.push(fn); },
+  };
+
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-lang]');
+    if (button) apply(button.dataset.lang, true);
+  });
+
+  let initial = new URLSearchParams(location.search).get('lang');
+  if (!initial) { try { initial = localStorage.getItem('themis-lang'); } catch (_) {} }
+  if (!initial) {
+    const preferred = (navigator.languages || [navigator.language || 'en']).map((code) =>
+      String(code).slice(0, 2).toLowerCase()
+    );
+    initial = preferred.find((code) => code === 'en' || DICT[code]) || 'en';
+  }
+  apply(initial, false);
+})();
+</script>
+
+<!-- ═════════════════ page chrome: starfield, nav, reveal, explorer ═════════════════ -->
+<script>
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- background starfield (2D, cheap) ---------- */
+(() => {
+  const cv = document.getElementById('stars'), ctx = cv.getContext('2d', { alpha: true });
+  let W = 0, H = 0, dpr = 1, stars = [], t = 0, raf = 0;
+  const build = () => {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(Math.min(190, (W * H) / 9000));
+    stars = Array.from({ length: n }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 1.25 + .22, z: Math.random() * .8 + .2,
+      vx: (Math.random() - .5) * .16, vy: (Math.random() - .5) * .16,
+      ph: Math.random() * 6.283,
+      hue: Math.random() < .18 ? 162 : Math.random() < .34 ? 38 : 205,
+    }));
+  };
+  build();
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 160); });
+  const draw = () => {
+    if (!REDUCE) t += .0055;
+    ctx.clearRect(0, 0, W, H);
+    for (const s of stars) {
+      if (!REDUCE) {
+        s.x += s.vx; s.y += s.vy;
+        if (s.x < -2) s.x = W + 2; else if (s.x > W + 2) s.x = -2;
+        if (s.y < -2) s.y = H + 2; else if (s.y > H + 2) s.y = -2;
+      }
+      const a = (.42 + Math.sin(t * 1.6 + s.ph) * .26) * s.z;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+      ctx.fillStyle = 'hsla(' + s.hue + ',72%,74%,' + a.toFixed(3) + ')';
+      ctx.fill();
+    }
+    if (!REDUCE) raf = requestAnimationFrame(draw);   /* reduced motion: one static field */
+  };
+  draw();
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(raf); else draw();
+  });
+})();
+
+/* ---------- nav: progress, active section, drawer ---------- */
+(() => {
+  const bar = document.getElementById('progress');
+  const links = [...document.querySelectorAll('#navlinks a[href^="#"]')];
+  const ids = links.map(a => a.getAttribute('href').slice(1));
+  const onScroll = () => {
+    const h = document.documentElement;
+    const p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
+    bar.style.width = (p * 100).toFixed(2) + '%';
+  };
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  const secs = ids.map(id => document.getElementById(id)).filter(Boolean);
+  if ('IntersectionObserver' in window && secs.length) {
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (!e.isIntersecting) return;
+        links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id));
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    secs.forEach(s => io.observe(s));
+  }
+
+  const b = document.getElementById('burger'), d = document.getElementById('drawer');
+  b.addEventListener('click', () => {
+    const open = d.classList.toggle('open');
+    b.setAttribute('aria-expanded', String(open));
+    b.textContent = open ? '✕' : '☰';
+  });
+  d.addEventListener('click', e => {
+    if (e.target.tagName === 'A') { d.classList.remove('open'); b.textContent = '☰'; b.setAttribute('aria-expanded', 'false'); }
+  });
+})();
+
+/* ---------- scroll reveal ---------- */
+(() => {
+  const items = [...document.querySelectorAll('.rv')];
+  if (REDUCE || !('IntersectionObserver' in window)) { items.forEach(i => i.classList.add('in')); return; }
+  const io = new IntersectionObserver((es, obs) => {
+    es.forEach((e, i) => {
+      if (!e.isIntersecting) return;
+      setTimeout(() => e.target.classList.add('in'), i * 70);
+      obs.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: .08 });
+  items.forEach(i => io.observe(i));
+})();
+
+/* ---------- copy button ---------- */
+function wireCopy(btn, getText) {
+  const label = () => (window.__i18n ? window.__i18n.t(btn.dataset.i18n) : btn.textContent);
+  btn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(getText()); }
+    catch { return; }
+    btn.textContent = window.__i18n ? window.__i18n.t('ex.copied') : 'COPIED';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = label(); btn.classList.remove('done'); }, 1600);
+  });
+}
+wireCopy(document.getElementById('copybtn'), () => document.getElementById('cmdtext').textContent.trim());
+
+/* ═══════════ real verdicts, produced by this repo's policy engine ═══════════ */
+const REPORTS = {
+  approve: { color: '#43e65a', report: {
+        "candidate": {
+            "product_id": "invoice-reader",
+            "capability_id": "invoice.read@v1",
+            "publisher_id": "trusted-vendor"
+        },
+        "decision": "approve",
+        "score": 100,
+        "risk_tier": "low",
+        "human_approval_required": false,
+        "projected_monthly_cost_usd": 20.0,
+        "findings": [],
+        "owasp_agentic_risks": [],
+        "attestations": {
+            "evidence_declared": 2,
+            "evidence_verified": 0,
+            "evidence_counted_kinds": [
+                "independent_audit",
+                "privacy_policy"
+            ],
+            "evidence_independently_attested": false,
+            "permissions_signed": false,
+            "permissions_signature_valid": null,
+            "permissions_bound_to_provider_key": null
+        },
+        "scope": "manifest-and-declared-permissions",
+        "limitations": [
+            "Evidence URLs are treated as references and are never fetched by this capability.",
+            "Unsigned evidence and unsigned permissions are declarations, not proof; attestation fields record exactly what was cryptographically verified.",
+            "The report is a procurement aid, not a compliance certification or proof of future behavior.",
+            "Metis may review the report, but it never overrides the deterministic decision."
+        ]
+    } },
+  review: { color: '#ffcc33', report: {
+        "candidate": {
+            "product_id": "invoice-reader",
+            "capability_id": "invoice.read@v1",
+            "publisher_id": "trusted-vendor"
+        },
+        "decision": "review",
+        "score": 78,
+        "risk_tier": "high",
+        "human_approval_required": true,
+        "projected_monthly_cost_usd": 20.0,
+        "findings": [
+            {
+                "code": "evidence.sbom_missing",
+                "severity": "high",
+                "message": "A code-executing candidate has no SBOM evidence.",
+                "remediation": "Attach a pinned software bill of materials with a cryptographic digest.",
+                "owasp": [
+                    "ASI04",
+                    "ASI05"
+                ]
+            }
+        ],
+        "owasp_agentic_risks": [
+            "ASI04",
+            "ASI05"
+        ],
+        "attestations": {
+            "evidence_declared": 2,
+            "evidence_verified": 0,
+            "evidence_counted_kinds": [
+                "independent_audit",
+                "privacy_policy"
+            ],
+            "evidence_independently_attested": false,
+            "permissions_signed": false,
+            "permissions_signature_valid": null,
+            "permissions_bound_to_provider_key": null
+        },
+        "scope": "manifest-and-declared-permissions",
+        "limitations": [
+            "Evidence URLs are treated as references and are never fetched by this capability.",
+            "Unsigned evidence and unsigned permissions are declarations, not proof; attestation fields record exactly what was cryptographically verified.",
+            "The report is a procurement aid, not a compliance certification or proof of future behavior.",
+            "Metis may review the report, but it never overrides the deterministic decision."
+        ]
+    } },
+  reject: { color: '#ff2d55', report: {
+        "candidate": {
+            "product_id": "invoice-reader",
+            "capability_id": "invoice.read@v1",
+            "publisher_id": "trusted-vendor"
+        },
+        "decision": "reject",
+        "score": 0,
+        "risk_tier": "critical",
+        "human_approval_required": true,
+        "projected_monthly_cost_usd": 20.0,
+        "findings": [
+            {
+                "code": "identity.provider_key_invalid",
+                "severity": "critical",
+                "message": "provider_pubkey is missing or is not a canonical 32-byte Ed25519 public key.",
+                "remediation": "Generate the provider identity and republish the exact public key.",
+                "owasp": [
+                    "ASI03",
+                    "ASI07"
+                ]
+            },
+            {
+                "code": "permissions.code_without_approval",
+                "severity": "critical",
+                "message": "The candidate may execute code without a human approval gate.",
+                "remediation": "Require an allowlist, sandbox, and human approval for high-impact execution.",
+                "owasp": [
+                    "ASI02",
+                    "ASI05"
+                ]
+            },
+            {
+                "code": "permissions.secret_exfiltration_path",
+                "severity": "critical",
+                "message": "Secret access and unrestricted network access create an exfiltration path.",
+                "remediation": "Use scoped credentials and an outbound hostname allowlist.",
+                "owasp": [
+                    "ASI01",
+                    "ASI03",
+                    "ASI04"
+                ]
+            },
+            {
+                "code": "transport.https_required",
+                "severity": "critical",
+                "message": "A public invoke_url uses plaintext HTTP.",
+                "remediation": "Terminate TLS before publishing the capability.",
+                "owasp": [
+                    "ASI04",
+                    "ASI07"
+                ]
+            },
+            {
+                "code": "evidence.sbom_missing",
+                "severity": "high",
+                "message": "A code-executing candidate has no SBOM evidence.",
+                "remediation": "Attach a pinned software bill of materials with a cryptographic digest.",
+                "owasp": [
+                    "ASI04",
+                    "ASI05"
+                ]
+            },
+            {
+                "code": "permissions.spend_without_approval",
+                "severity": "high",
+                "message": "The candidate may spend money without a human approval gate.",
+                "remediation": "Enforce a per-task budget and human approval above a small threshold.",
+                "owasp": [
+                    "ASI02",
+                    "ASI03",
+                    "ASI08"
+                ]
+            },
+            {
+                "code": "evidence.independent_audit_missing",
+                "severity": "medium",
+                "message": "A high-impact candidate has no independent audit evidence.",
+                "remediation": "Require an independent review and bind the report digest to the dossier.",
+                "owasp": [
+                    "ASI04",
+                    "ASI09"
+                ]
+            },
+            {
+                "code": "evidence.insufficient",
+                "severity": "medium",
+                "message": "The dossier contains fewer distinct evidence types than policy requires.",
+                "remediation": "Attach current, source-bound evidence; declarations alone are not proof.",
+                "owasp": [
+                    "ASI04",
+                    "ASI09"
+                ]
+            }
+        ],
+        "owasp_agentic_risks": [
+            "ASI01",
+            "ASI02",
+            "ASI03",
+            "ASI04",
+            "ASI05",
+            "ASI07",
+            "ASI08",
+            "ASI09"
+        ],
+        "attestations": {
+            "evidence_declared": 0,
+            "evidence_verified": 0,
+            "evidence_counted_kinds": [],
+            "evidence_independently_attested": false,
+            "permissions_signed": false,
+            "permissions_signature_valid": null,
+            "permissions_bound_to_provider_key": null
+        },
+        "scope": "manifest-and-declared-permissions",
+        "limitations": [
+            "Evidence URLs are treated as references and are never fetched by this capability.",
+            "Unsigned evidence and unsigned permissions are declarations, not proof; attestation fields record exactly what was cryptographically verified.",
+            "The report is a procurement aid, not a compliance certification or proof of future behavior.",
+            "Metis may review the report, but it never overrides the deterministic decision."
+        ]
+    } },
+};
+
+/* ---------- verdict explorer ---------- */
+(() => {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const hi = obj => esc(JSON.stringify(obj, null, 2))
+    .replace(/"([^"\\]*(?:\\.[^"\\]*)*)"(\s*:)/g, '<span class="k">"$1"</span>$2')
+    .replace(/:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/g, ': <span class="s">"$1"</span>')
+    .replace(/:\s*(-?\d+(?:\.\d+)?)/g, ': <span class="n">$1</span>')
+    .replace(/\b(true|false|null)\b/g, '<span class="b">$1</span>');
+
+  const T = (key, vars) => (window.__i18n ? window.__i18n.t(key, vars) : key);
+  const kv = document.getElementById('ex-kv');
+  const fl = document.getElementById('ex-findings');
+  const js = document.getElementById('ex-json');
+  const nt = document.getElementById('ex-note');
+  const tabs = [...document.querySelectorAll('.tabs button')];
+  let current = 'approve';
+
+  function render(v) {
+    current = v;
+    const e = REPORTS[v], r = e.report;
+    const a = r.attestations || {};
+    tabs.forEach(tab => {
+      tab.setAttribute('aria-selected', String(tab.dataset.v === v));
+      const sub = tab.querySelector('.s');
+      const report = REPORTS[tab.dataset.v].report;
+      const count = report.findings.length;
+      if (sub) {
+        sub.textContent = T('ex.tab', {
+          score: report.score,
+          risk: report.risk_tier,
+          n: count + ' ' + T(count === 1 ? 'ex.finding' : 'ex.findings'),
+        });
+      }
+    });
+    kv.innerHTML = [
+      [T('kv.decision'), '<b style="color:' + e.color + ';font-family:var(--head);letter-spacing:.06em">' + r.decision.toUpperCase() + '</b>'],
+      [T('kv.score'), r.score + ' ' + T('kv.of')],
+      [T('kv.risk'), r.risk_tier],
+      [T('kv.gate'), r.human_approval_required ? T('kv.required') : T('kv.notrequired')],
+      [T('kv.cost'), '$' + r.projected_monthly_cost_usd.toFixed(2) + ' ' + T('kv.calls')],
+      [T('kv.attested'), (a.evidence_verified || 0) + ' / ' + (a.evidence_declared || 0)],
+      [T('kv.capability'), r.candidate.capability_id],
+      [T('kv.scope'), r.scope]
+    ].map(([k, val]) => '<dt>' + k + '</dt><dd>' + val + '</dd>').join('');
+
+    let html = '<p class="note" style="margin:0 0 14px">' + esc(T('ex.story.' + v)) + '</p>';
+    if (!r.findings.length) {
+      html += '<div class="clean">' + esc(T('ex.clean')) + '</div>';
+    } else {
+      html += r.findings.map(f =>
+        '<div class="finding ' + f.severity + '">' +
+        '<div class="fh"><span class="code">' + esc(f.code) + '</span><span class="sev">' + f.severity + '</span></div>' +
+        '<p>' + esc(f.message) + '</p>' +
+        '<div class="rem"><b>' + esc(T('ex.remediation')) + '</b>' + esc(f.remediation) + '</div>' +
+        '<div class="owasp">' + f.owasp.map(o => '<span>' + o + '</span>').join('') + '</div>' +
+        '</div>').join('');
+    }
+    fl.innerHTML = html;
+    js.innerHTML = hi(r);
+    nt.textContent = T('ex.note.' + v);
+  }
+  tabs.forEach(t => t.addEventListener('click', () => {
+    render(t.dataset.v);
+    if (window.__themisGate) window.__themisGate.show(t.dataset.v);
+  }));
+  render('approve');
+  if (window.__i18n) window.__i18n.onChange(() => render(current));
+  wireCopy(document.getElementById('ex-copy'), () => JSON.stringify(REPORTS[current].report, null, 2));
+})();
+</script>
+
+<!-- ═════════════════ the gate: Three.js ═════════════════ -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('gate-canvas');
+const hud = {
+  decision: document.getElementById('hud-decision'),
+  phase: document.getElementById('hud-phase'),
+  msg: document.getElementById('hud-msg'),
+  bar: document.getElementById('hud-bar'),
+  score: document.getElementById('hud-score'),
+  risk: document.getElementById('hud-risk'),
+  find: document.getElementById('hud-find'),
+};
+const tags = {
+  approve: document.getElementById('tag-approve'),
+  review: document.getElementById('tag-review'),
+  reject: document.getElementById('tag-reject'),
+};
+const hint = document.getElementById('hint');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mobile = matchMedia('(max-width: 760px)').matches;
+const T = (key, vars) => (window.__i18n ? window.__i18n.t(key, vars) : key);
+
+try { boot(); } catch (err) { fail(err); }
+function fail(err) {
+  console.warn('[themis-gate]', err);
+  stage.classList.add('failed');
+  hud.phase.textContent = T('hud.static');
+  hud.msg.textContent = T('stage.fallback');
+}
+
+function boot() {
+/* ────────────────── palette & data ────────────────── */
+const C = {
+  bronze: new THREE.Color('#c9a46a'), bronzeHi: new THREE.Color('#e8d3a6'),
+  teal: new THREE.Color('#66f7c5'), ink: new THREE.Color('#eef3f7'),
+  approve: new THREE.Color('#43e65a'), review: new THREE.Color('#ffcc33'), reject: new THREE.Color('#ff2d55'),
+};
+const VERDICTS = [
+  { id: 'approve', color: C.approve, x: -1.34, score: 100, risk: 'low', findings: 0, tilt: 0.30 },
+  { id: 'review', color: C.review, x: 0.0, score: 78, risk: 'high', findings: 1, tilt: -0.05 },
+  { id: 'reject', color: C.reject, x: 1.34, score: 0, risk: 'critical', findings: 8, tilt: -0.34 },
+];
+
+/* ────────────────── renderer ────────────────── */
+const renderer = new THREE.WebGLRenderer({
+  canvas, antialias: !mobile, alpha: true, powerPreference: 'high-performance', stencil: false,
+});
+let DPR = Math.min(devicePixelRatio || 1, mobile ? 1.5 : 1.9);
+renderer.setPixelRatio(DPR);
+renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(33, 1, 0.1, 200);
+camera.position.set(0.80, 1.28, 8.95);
+if (mobile) { camera.position.set(0.55, 1.15, 10.9); renderer.toneMappingExposure = 0.94; }
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.055;
+controls.enablePan = false;
+controls.minDistance = mobile ? 7.0 : 5.4; controls.maxDistance = mobile ? 14.5 : 12.5;
+controls.minPolarAngle = 0.55; controls.maxPolarAngle = Math.PI * 0.545;
+controls.rotateSpeed = 0.62; controls.zoomSpeed = 0.6;
+controls.autoRotate = !reduce; controls.autoRotateSpeed = 0.42;
+controls.target.set(0, -0.02, 0.30);
+
+/* pause auto-rotate while the visitor is driving */
+let idleAt = 0;
+controls.addEventListener('start', () => { controls.autoRotate = false; hint && (hint.style.opacity = '0'); });
+controls.addEventListener('end', () => { idleAt = performance.now() + 5000; });
+
+/* ────────────────── procedural environment (real reflections) ────────────────── */
+function buildEnvironment() {
+  const env = new THREE.Scene();
+  const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(60, 32, 24),
+    new THREE.ShaderMaterial({
+      side: THREE.BackSide, depthWrite: false,
+      uniforms: { cTop: { value: new THREE.Color('#0b1220') }, cBot: { value: new THREE.Color('#03050a') },
+                  cWarm: { value: new THREE.Color('#3a2a12') } },
+      vertexShader: `varying vec3 vP; void main(){ vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+      fragmentShader: `
+        uniform vec3 cTop,cBot,cWarm; varying vec3 vP;
+        void main(){
+          vec3 d=normalize(vP);
+          float h=clamp(d.y*0.5+0.5,0.0,1.0);
+          vec3 col=mix(cBot,cTop,pow(h,0.85));
+          col+=cWarm*pow(max(0.0,dot(d,normalize(vec3(0.7,0.35,0.55)))),6.0)*1.4;
+          gl_FragColor=vec4(col,1.0);
+        }`,
+    })
+  );
+  env.add(sky);
+  /* specular light cards — what makes metal read as metal */
+  const card = (w, h, col, int, pos, look) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
+      new THREE.MeshBasicMaterial({ color: col, side: THREE.DoubleSide }));
+    m.material.color.multiplyScalar(int);
+    m.position.copy(pos); m.lookAt(look || new THREE.Vector3(0, 0, 0));
+    env.add(m); return m;
+  };
+  card(18, 9, 0xfff0d8, 4.2, new THREE.Vector3(11, 9, 8));
+  card(14, 22, 0x66f7c5, 1.5, new THREE.Vector3(-13, 3, 4));
+  card(20, 6, 0xc9a46a, 2.0, new THREE.Vector3(0, -7, -12));
+  card(9, 9, 0xffffff, 2.6, new THREE.Vector3(-4, 12, -9));
+  card(22, 14, 0xe9f2ff, 1.8, new THREE.Vector3(0, 5, 17));   /* front softbox */
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  pmrem.compileEquirectangularShader();
+  const rt = pmrem.fromScene(env, 0.035);
+  pmrem.dispose();
+  sky.geometry.dispose(); sky.material.dispose();
+  return rt.texture;
+}
+scene.environment = buildEnvironment();
+scene.environmentIntensity = 1.05;
+
+/* ────────────────── lights ────────────────── */
+scene.add(new THREE.AmbientLight(0x9fb0c4, 0.22));
+const key = new THREE.SpotLight(0xffe6bd, mobile ? 30 : 42, 28, 0.70, 0.5, 1.6);
+key.position.set(3.4, 4.8, 3.6); key.target.position.set(0, 0.2, 0);
+scene.add(key, key.target);
+const rimL = new THREE.PointLight(0x66f7c5, 13, 18, 2); rimL.position.set(-3.3, 1.0, 1.7); scene.add(rimL);
+const rimR = new THREE.PointLight(0xc9a46a, 11, 18, 2); rimR.position.set(2.8, 0.6, -2.6); scene.add(rimR);
+const frontFill = new THREE.PointLight(0xdce8f6, mobile ? 13 : 22, 28, 2); frontFill.position.set(0.7, 1.7, 7.2); scene.add(frontFill);
+const verdictLight = new THREE.PointLight(0xffffff, 0, 14, 2); verdictLight.position.set(0, 0.3, 1.55); scene.add(verdictLight);
+
+/* ────────────────── procedural maps ────────────────── */
+function noiseTexture(size, base, amp, oct) {
+  const cv = document.createElement('canvas'); cv.width = cv.height = size;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#' + Math.round(base * 255).toString(16).repeat(3).slice(0, 6);
+  g.fillStyle = `rgb(${base * 255 | 0},${base * 255 | 0},${base * 255 | 0})`;
+  g.fillRect(0, 0, size, size);
+  for (let o = 0; o < oct; o++) {
+    const step = size / (4 << o), a = amp / (o + 1.4);
+    for (let y = 0; y < size; y += step) for (let x = 0; x < size; x += step) {
+      const v = (Math.random() - 0.5) * a * 255;
+      g.fillStyle = `rgba(${v > 0 ? 255 : 0},${v > 0 ? 255 : 0},${v > 0 ? 255 : 0},${Math.abs(v) / 255})`;
+      g.fillRect(x, y, step, step);
+    }
+  }
+  /* brushed streaks along X */
+  g.globalAlpha = 0.16;
+  for (let i = 0; i < size * 1.4; i++) {
+    const y = Math.random() * size, w = 40 + Math.random() * size;
+    g.strokeStyle = Math.random() > .5 ? '#fff' : '#000';
+    g.beginPath(); g.moveTo(Math.random() * size, y); g.lineTo(Math.random() * size + w, y + (Math.random() - .5) * 2); g.stroke();
+  }
+  g.globalAlpha = 1;
+  const t = new THREE.CanvasTexture(cv);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+  return t;
+}
+const roughMap = noiseTexture(mobile ? 128 : 256, 0.55, 0.55, 4);
+roughMap.repeat.set(3, 3);
+
+function contactShadow(size) {
+  const cv = document.createElement('canvas'); cv.width = cv.height = size;
+  const g = cv.getContext('2d');
+  const grd = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  grd.addColorStop(0, 'rgba(0,0,0,.85)'); grd.addColorStop(.45, 'rgba(0,0,0,.35)');
+  grd.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grd; g.fillRect(0, 0, size, size);
+  return new THREE.CanvasTexture(cv);
+}
+
+/* ────────────────── materials ────────────────── */
+const bronzeMat = new THREE.MeshPhysicalMaterial({
+  color: 0x9c7639, metalness: 1.0, roughness: 0.44, roughnessMap: roughMap,
+  clearcoat: 0.20, clearcoatRoughness: 0.5, envMapIntensity: 1.25,
+  anisotropy: 0.55, anisotropyRotation: Math.PI / 2,
+});
+const bronzeDark = new THREE.MeshPhysicalMaterial({
+  color: 0x5f4a24, metalness: 1.0, roughness: 0.58, roughnessMap: roughMap, envMapIntensity: 0.85,
+});
+const steelMat = new THREE.MeshPhysicalMaterial({
+  color: 0x7d8896, metalness: 1.0, roughness: 0.28, envMapIntensity: 1.15,
+});
+const glassCore = new THREE.MeshPhysicalMaterial({
+  color: 0xdff7ff, metalness: 0, roughness: 0.06, transmission: 0.92, thickness: 0.6,
+  ior: 1.45, envMapIntensity: 1.4, emissive: 0x66f7c5, emissiveIntensity: 0.35,
+  transparent: true, clearcoat: 1, clearcoatRoughness: 0.05,
+});
+
+const root = new THREE.Group();
+root.position.y = -0.1;
+scene.add(root);
+
+/* ────────────────── pedestal (turned profile, not a cylinder) ────────────────── */
+function lathe(profile, seg, mat) {
+  const pts = profile.map(([x, y]) => new THREE.Vector2(x, y));
+  const g = new THREE.LatheGeometry(pts, seg);
+  g.computeVertexNormals();
+  return new THREE.Mesh(g, mat);
+}
+const plinth = lathe([
+  [0.00, -1.20], [0.96, -1.20], [0.96, -1.13], [0.88, -1.06], [0.88, -1.00],
+  [0.76, -0.96], [0.62, -0.93], [0.58, -0.88], [0.60, -0.84], [0.50, -0.80],
+  [0.30, -0.78], [0.24, -0.74], [0.00, -0.74],
+], mobile ? 48 : 96, bronzeMat);
+plinth.scale.set(0.80, 0.94, 0.80);
+root.add(plinth);
+
+const column = lathe([
+  [0.00, -0.76], [0.22, -0.76], [0.19, -0.70], [0.155, -0.55], [0.145, -0.10],
+  [0.150, 0.28], [0.170, 0.44], [0.135, 0.48], [0.125, 0.56], [0.20, 0.58],
+  [0.205, 0.63], [0.10, 0.66], [0.00, 0.66],
+], mobile ? 40 : 80, bronzeMat);
+root.add(column);
+
+/* fluting: thin vertical rods around the shaft — instanced, cheap, reads as craft */
+{
+  const n = mobile ? 10 : 16;
+  const rod = new THREE.CylinderGeometry(0.012, 0.012, 1.18, 6);
+  const inst = new THREE.InstancedMesh(rod, bronzeDark, n);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(1, 1, 1);
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    m.compose(new THREE.Vector3(Math.cos(a) * 0.152, -0.10, Math.sin(a) * 0.152), q, s);
+    inst.setMatrixAt(i, m);
+  }
+  inst.instanceMatrix.needsUpdate = true;
+  root.add(inst);
+}
+
+/* fulcrum */
+const fulcrum = new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), steelMat);
+fulcrum.position.y = 0.70; fulcrum.rotation.y = Math.PI / 4;
+root.add(fulcrum);
+const collar = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.026, 12, mobile ? 28 : 48), bronzeMat);
+collar.position.y = 0.70; collar.rotation.x = Math.PI / 2;
+root.add(collar);
+
+/* ────────────────── the beam (chamfered extrusion) ────────────────── */
+const beamPivot = new THREE.Group();
+beamPivot.position.y = 0.70;
+root.add(beamPivot);
+{
+  const half = 1.46, th = 0.055;
+  const shp = new THREE.Shape();
+  shp.moveTo(-half, -0.020); shp.lineTo(-half * 0.72, -th); shp.lineTo(half * 0.72, -th);
+  shp.lineTo(half, -0.020); shp.lineTo(half, 0.020); shp.lineTo(half * 0.72, th);
+  shp.lineTo(-half * 0.72, th); shp.lineTo(-half, 0.020); shp.closePath();
+  const g = new THREE.ExtrudeGeometry(shp, {
+    depth: 0.062, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 2, steps: 1,
+  });
+  g.translate(0, 0, -0.031); g.computeVertexNormals();
+  beamPivot.add(new THREE.Mesh(g, bronzeMat));
+  /* end finials */
+  [-1, 1].forEach(s => {
+    const f = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 12), bronzeMat);
+    f.position.set(s * half, 0, 0); beamPivot.add(f);
+  });
+}
+
+/* chains: instanced interlocking links along each hanger */
+const pans = [];
+[-1, 1].forEach((side, idx) => {
+  const arm = new THREE.Group();
+  arm.position.set(side * 1.42, 0, 0);
+  beamPivot.add(arm);
+
+  const links = mobile ? 6 : 9, drop = 0.56;
+  const linkGeo = new THREE.TorusGeometry(0.026, 0.0075, 6, mobile ? 12 : 18);
+  const chain = new THREE.InstancedMesh(linkGeo, steelMat, links);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(1, 1, 1);
+  for (let i = 0; i < links; i++) {
+    q.setFromEuler(new THREE.Euler(Math.PI / 2, i % 2 ? Math.PI / 2 : 0, 0));
+    m.compose(new THREE.Vector3(0, -0.03 - (i / (links - 1)) * drop, 0), q, s);
+    chain.setMatrixAt(i, m);
+  }
+  chain.instanceMatrix.needsUpdate = true;
+  arm.add(chain);
+
+  /* pan: shallow turned bowl */
+  const pan = new THREE.Group();
+  pan.position.y = -0.03 - drop - 0.02;
+  const bowl = lathe([
+    [0.00, 0.000], [0.30, 0.010], [0.40, 0.038], [0.425, 0.058], [0.415, 0.062],
+    [0.385, 0.046], [0.285, 0.022], [0.00, 0.012],
+  ], mobile ? 36 : 64, bronzeMat);
+  pan.add(bowl);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.012, 8, mobile ? 32 : 56), bronzeMat);
+  rim.position.y = 0.058; rim.rotation.x = Math.PI / 2;
+  pan.add(rim);
+
+  /* glow disc that lights up while weighing */
+  const glowMat = new THREE.MeshBasicMaterial({
+    color: idx === 0 ? 0x66f7c5 : 0xff5577, transparent: true, opacity: 0.0,
+    blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
+  });
+  const glow = new THREE.Mesh(new THREE.CircleGeometry(0.36, 40), glowMat);
+  glow.rotation.x = -Math.PI / 2; glow.position.y = 0.026;
+  pan.add(glow);
+
+  arm.add(pan);
+  pans.push({ arm, pan, glow: glowMat });
+});
+
+/* ────────────────── the arch + admission membrane ────────────────── */
+const archZ = -2.35;
+const arch = new THREE.Mesh(new THREE.TorusGeometry(1.52, 0.048, 14, mobile ? 64 : 128), bronzeMat);
+arch.position.set(0, 0.38, archZ);
+root.add(arch);
+{ /* inner bead ring */
+  const bead = new THREE.Mesh(new THREE.TorusGeometry(1.38, 0.014, 8, mobile ? 48 : 96), bronzeDark);
+  bead.position.copy(arch.position); root.add(bead);
+}
+
+const membraneU = {
+  uTime: { value: 0 }, uColor: { value: C.teal.clone() }, uOpen: { value: 0.0 }, uFlash: { value: 0.0 },
+};
+const membrane = new THREE.Mesh(
+  new THREE.CircleGeometry(1.50, mobile ? 48 : 96),
+  new THREE.ShaderMaterial({
+    uniforms: membraneU, transparent: true, depthWrite: false,
+    blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader: `
+      uniform float uTime,uOpen,uFlash; uniform vec3 uColor; varying vec2 vUv;
+      float hash(vec2 p){ return fract(sin(dot(p,vec2(41.3,289.1)))*43758.5453); }
+      void main(){
+        vec2 c=vUv*2.0-1.0; float r=length(c); if(r>1.0) discard;
+        float ang=atan(c.y,c.x);
+        float edge=smoothstep(1.0,0.55,r);
+        float rim=smoothstep(0.88,1.0,r);
+        float rings=smoothstep(0.62,1.0,sin(r*26.0-uTime*1.7))*0.16;
+        float spokes=smoothstep(0.92,1.0,sin(ang*18.0+uTime*0.5))*0.07;
+        float cells=hash(floor(vec2(ang*6.0,r*9.0)-vec2(0.0,uTime*0.35)));
+        cells=smoothstep(0.90,1.0,cells)*0.20;
+        float sweep=smoothstep(0.07,0.0,abs(fract(r-uTime*0.16)-0.5)-0.46)*0.22;
+        float a=(rings+spokes+cells+sweep+rim*0.34)*edge*uOpen;
+        vec3 col=uColor*(0.4+a*1.1)+vec3(1.0)*uFlash*edge*0.35;
+        gl_FragColor=vec4(col,clamp(a*0.24+uFlash*edge*0.20,0.0,1.0));
+      }`,
+  })
+);
+membrane.position.set(0, 0.38, archZ + 0.01);
+root.add(membrane);
+
+/* ────────────────── ground: polar grid + verdict pulse ────────────────── */
+const groundU = {
+  uTime: { value: 0 }, uPulse: { value: 2.0 }, uPulseColor: { value: C.teal.clone() },
+  uBase: { value: new THREE.Color('#2a6153') },
+};
+const ground = new THREE.Mesh(
+  new THREE.CircleGeometry(4.6, mobile ? 64 : 128),
+  new THREE.ShaderMaterial({
+    uniforms: groundU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader: `
+      uniform float uTime,uPulse; uniform vec3 uPulseColor,uBase; varying vec2 vUv;
+      void main(){
+        vec2 c=vUv*2.0-1.0; float r=length(c); if(r>1.0) discard;
+        float ang=atan(c.y,c.x);
+        float fade=smoothstep(1.0,0.15,r);
+        float rings=smoothstep(0.93,1.0,sin(r*52.0-uTime*0.35))*0.30;
+        float spokes=smoothstep(0.995,1.0,cos(ang*36.0))*0.30;
+        float inner=smoothstep(0.115,0.105,r)*0.10;
+        float p=smoothstep(0.055,0.0,abs(r-uPulse))*max(0.0,1.0-uPulse)*1.5;
+        vec3 col=uBase*(rings+spokes+inner+0.02)+uPulseColor*p;
+        float a=(rings+spokes+inner+0.028)*fade+p*0.85;
+        gl_FragColor=vec4(col,clamp(a,0.0,1.0));
+      }`,
+  })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -1.205;
+root.add(ground);
+
+/* contact shadow under the plinth */
+{
+  const sh = new THREE.Mesh(
+    new THREE.PlaneGeometry(3.1, 3.1),
+    new THREE.MeshBasicMaterial({ map: contactShadow(128), transparent: true, opacity: 0.75, depthWrite: false })
+  );
+  sh.rotation.x = -Math.PI / 2; sh.position.y = -1.198;
+  root.add(sh);
+}
+
+/* ────────────────── verdict lanes ────────────────── */
+const lanes = VERDICTS.map((v) => {
+  const g = new THREE.Group();
+  g.position.set(v.x, -1.19, 2.05);
+  root.add(g);
+
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: v.color, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false,
+  });
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.44, 0.011, 8, mobile ? 40 : 72), ringMat);
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.006;
+  g.add(ring);
+
+  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(0.30, 0.006, 8, mobile ? 32 : 56), ringMat.clone());
+  ring2.rotation.x = -Math.PI / 2; ring2.position.y = 0.006;
+  g.add(ring2);
+
+  /* orb + halo */
+  const orb = new THREE.Mesh(new THREE.IcosahedronGeometry(0.115, 2), new THREE.MeshPhysicalMaterial({
+    color: v.color, emissive: v.color, emissiveIntensity: 0.5, metalness: 0.1, roughness: 0.15,
+    envMapIntensity: 1.2, transparent: true, opacity: 0.95,
+  }));
+  orb.position.y = 0.30; g.add(orb);
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(0.2, 20, 14), new THREE.MeshBasicMaterial({
+    color: v.color, transparent: true, opacity: 0.10, blending: THREE.AdditiveBlending, depthWrite: false,
+  }));
+  halo.position.y = 0.30; g.add(halo);
+
+  /* light shaft */
+  const shaftU = { uTime: { value: 0 }, uColor: { value: v.color.clone() }, uOn: { value: 0.0 } };
+  const shaft = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.42, 0.14, 2.5, mobile ? 20 : 36, 1, true),
+    new THREE.ShaderMaterial({
+      uniforms: shaftU, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+      vertexShader: `
+        varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+        void main(){
+          vUv=uv;
+          vec4 mv=modelViewMatrix*vec4(position,1.0);
+          vN=normalize(normalMatrix*normal);
+          vV=normalize(-mv.xyz);
+          gl_Position=projectionMatrix*mv;
+        }`,
+      fragmentShader: `
+        uniform float uTime,uOn; uniform vec3 uColor;
+        varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+        void main(){
+          /* thickness of the volume along the view ray: max facing us, zero at the silhouette */
+          float thick=pow(abs(dot(normalize(vN),normalize(vV))),1.15);
+          float up=smoothstep(0.0,0.85,vUv.y);
+          float band=0.60+0.40*sin(vUv.y*20.0-uTime*3.2);
+          float a=(1.0-up)*thick*uOn*(0.10+band*0.26);
+          gl_FragColor=vec4(uColor*(1.05+band*0.45),a);
+        }`,
+    })
+  );
+  shaft.position.y = 1.25; g.add(shaft);
+
+  return { ...v, group: g, ring: ringMat, ring2: ring2.material, orb, halo, shaftU,
+           anchor: new THREE.Vector3(v.x, -0.26, 2.05) };
+});
+
+/* ────────────────── GPU packet stream ────────────────── */
+const N = mobile ? 520 : 1700;
+const pGeo = new THREE.BufferGeometry();
+{
+  const pos = new Float32Array(N * 3), seed = new Float32Array(N), off = new Float32Array(N), spd = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    pos[i * 3] = 0; pos[i * 3 + 1] = 0; pos[i * 3 + 2] = 0;
+    seed[i] = Math.random(); off[i] = Math.random(); spd[i] = 0.6 + Math.random() * 0.85;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  pGeo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+  pGeo.setAttribute('aOff', new THREE.BufferAttribute(off, 1));
+  pGeo.setAttribute('aSpd', new THREE.BufferAttribute(spd, 1));
+}
+const packetU = {
+  uTime: { value: 0 }, uSize: { value: (mobile ? 34 : 46) * DPR },
+  uLaneX: { value: 0 }, uVerdict: { value: C.approve.clone() }, uNeutral: { value: C.bronzeHi.clone() },
+  uGateZ: { value: archZ }, uDecided: { value: 0.0 }, uFlow: { value: 1.0 },
+};
+const packets = new THREE.Points(pGeo, new THREE.ShaderMaterial({
+  uniforms: packetU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    uniform float uTime,uSize,uLaneX,uGateZ,uDecided,uFlow;
+    attribute float aSeed,aOff,aSpd;
+    varying float vT; varying float vSeed;
+    void main(){
+      float t=fract(aOff+uTime*0.055*aSpd*uFlow);
+      vT=t; vSeed=aSeed;
+      float ang=aSeed*6.2831;
+      float spread=0.55+aSeed*1.05;
+      // intake: wide funnel behind the arch -> converge at the membrane -> fan into the lane
+      float conv=smoothstep(0.0,0.42,t);
+      float fan=smoothstep(0.58,1.0,t);
+      float x=mix(cos(ang)*spread*1.5,cos(ang)*0.16,conv);
+      x=mix(x,uLaneX+cos(ang)*0.20*uDecided,fan*uDecided);
+      float y=mix(sin(ang)*spread*0.85+0.35,sin(ang)*0.14+0.35,conv);
+      y=mix(y,-0.78+sin(ang)*0.12,fan);
+      y+=sin(t*9.4+aSeed*24.0)*0.045*(1.0-fan);
+      float z=mix(uGateZ-3.2,uGateZ+4.5,t);
+      vec4 mv=modelViewMatrix*vec4(x,y,z,1.0);
+      gl_Position=projectionMatrix*mv;
+      float near=1.0-smoothstep(0.0,0.10,abs(t-0.42));
+      gl_PointSize=uSize*(0.32+aSeed*0.5+near*0.8)/max(0.35,-mv.z);
+    }`,
+  fragmentShader: `
+    uniform vec3 uVerdict,uNeutral; uniform float uDecided;
+    varying float vT; varying float vSeed;
+    void main(){
+      vec2 q=gl_PointCoord-0.5; float d=length(q);
+      if(d>0.5) discard;
+      float core=pow(smoothstep(0.5,0.0,d),3.2);
+      float halo=smoothstep(0.5,0.0,d)*0.28;
+      float decided=smoothstep(0.40,0.58,vT)*uDecided;
+      vec3 col=mix(uNeutral,uVerdict,decided);
+      float fadeIn=smoothstep(0.0,0.10,vT), fadeOut=1.0-smoothstep(0.86,1.0,vT);
+      float gateFlash=1.0+2.2*(1.0-smoothstep(0.0,0.055,abs(vT-0.42)));
+      float a=(core+halo)*fadeIn*fadeOut*(0.45+vSeed*0.55)*gateFlash;
+      gl_FragColor=vec4(col*(0.9+core*1.5),a);
+    }`,
+}));
+root.add(packets);
+
+/* ambient dust for depth */
+{
+  const M = mobile ? 200 : 600, p = new Float32Array(M * 3);
+  for (let i = 0; i < M; i++) {
+    const r = 5 + Math.random() * 16, a = Math.random() * 6.2832, b = (Math.random() - 0.5) * 2;
+    p[i * 3] = Math.cos(a) * r; p[i * 3 + 1] = b * r * 0.5; p[i * 3 + 2] = Math.sin(a) * r;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(p, 3));
+  const dust = new THREE.Points(g, new THREE.PointsMaterial({
+    color: 0x9fc8d8, size: 0.03, sizeAttenuation: true, transparent: true, opacity: 0.35,
+    depthWrite: false, blending: THREE.AdditiveBlending,
+  }));
+  scene.add(dust);
+}
+
+/* ────────────────── the receipt plate (canvas texture, real numbers) ────────────────── */
+const receiptCv = document.createElement('canvas');
+receiptCv.width = 1024; receiptCv.height = 576;
+const receiptTex = new THREE.CanvasTexture(receiptCv);
+receiptTex.colorSpace = THREE.SRGBColorSpace;
+receiptTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+const receiptMat = new THREE.MeshBasicMaterial({
+  map: receiptTex, transparent: true, depthWrite: false, side: THREE.DoubleSide, opacity: 0,
+});
+const receipt = new THREE.Mesh(new THREE.PlaneGeometry(2.05, 1.16), receiptMat);
+receipt.position.set(0, 1.34, 1.10);
+root.add(receipt);
+
+function hexLine(len, seedStr) {
+  let h = 0; for (let i = 0; i < seedStr.length; i++) h = (h * 31 + seedStr.charCodeAt(i)) | 0;
+  let out = '';
+  for (let i = 0; i < len; i++) { h = (h * 1103515245 + 12345) & 0x7fffffff; out += '0123456789abcdef'[h % 16]; }
+  return out;
+}
+function drawReceipt(v) {
+  const g = receiptCv.getContext('2d'), W = receiptCv.width, H = receiptCv.height;
+  g.clearRect(0, 0, W, H);
+  const R = 34, pad = 16;
+  const rr = (x, y, w, h, r) => {
+    g.beginPath();
+    g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+    g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+  };
+  const col = '#' + v.color.getHexString();
+  /* plate */
+  const grd = g.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, 'rgba(14,20,29,.95)'); grd.addColorStop(1, 'rgba(6,9,14,.97)');
+  rr(pad, pad, W - pad * 2, H - pad * 2, R); g.fillStyle = grd; g.fill();
+  g.strokeStyle = col; g.lineWidth = 3; g.globalAlpha = .85; g.stroke(); g.globalAlpha = 1;
+  /* header */
+  g.fillStyle = '#5b6877'; g.font = '600 26px "IBM Plex Mono",monospace';
+  g.fillText('A D M I S S I O N   R E C E I P T', 60, 96);
+  g.strokeStyle = 'rgba(201,164,106,.35)'; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(60, 120); g.lineTo(W - 60, 120); g.stroke();
+  /* decision */
+  g.fillStyle = col; g.font = '800 104px Syne,system-ui,sans-serif';
+  g.fillText(v.id.toUpperCase(), 56, 232);
+  /* numbers */
+  g.font = '600 24px "IBM Plex Mono",monospace';
+  g.fillStyle = '#5b6877'; g.fillText('SCORE', 60, 300);
+  g.fillText('RISK TIER', 300, 300); g.fillText('FINDINGS', 600, 300);
+  g.fillStyle = '#eef3f7'; g.font = '700 42px Syne,system-ui,sans-serif';
+  g.fillText(String(v.score), 60, 350);
+  g.fillText(v.risk, 300, 350);
+  g.fillText(String(v.findings), 600, 350);
+  /* capability + signature */
+  g.font = '500 21px "IBM Plex Mono",monospace'; g.fillStyle = '#8b98a8';
+  g.fillText('agent.security.supply-chain.audit@v1', 60, 420);
+  g.fillStyle = '#5b6877'; g.font = '500 19px "IBM Plex Mono",monospace';
+  g.fillText('ed25519 ' + hexLine(46, v.id), 60, 464);
+  g.fillText('request-bound · covers exact submitted input', 60, 500);
+  /* seal */
+  g.strokeStyle = col; g.lineWidth = 3; g.globalAlpha = .9;
+  g.beginPath(); g.arc(W - 150, 350, 76, 0, 6.2832); g.stroke();
+  g.lineWidth = 1.5; g.globalAlpha = .5;
+  g.beginPath(); g.arc(W - 150, 350, 64, 0, 6.2832); g.stroke();
+  g.globalAlpha = 1;
+  for (let i = 0; i < 36; i++) {
+    const a = (i / 36) * 6.2832;
+    g.beginPath();
+    g.moveTo(W - 150 + Math.cos(a) * 66, 350 + Math.sin(a) * 66);
+    g.lineTo(W - 150 + Math.cos(a) * (i % 3 ? 71 : 74), 350 + Math.sin(a) * (i % 3 ? 71 : 74));
+    g.strokeStyle = col; g.globalAlpha = i % 3 ? .35 : .8; g.stroke();
+  }
+  g.globalAlpha = 1;
+  g.fillStyle = col; g.font = '800 30px Syne,system-ui,sans-serif';
+  g.textAlign = 'center'; g.fillText('Θ', W - 150, 362); g.textAlign = 'left';
+  receiptTex.needsUpdate = true;
+}
+drawReceipt(VERDICTS[0]);
+
+/* ────────────────── post-processing ────────────────── */
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), mobile ? 0.34 : 0.46, 0.55, 0.84);
+composer.addPass(bloom);
+const gradeShader = {
+  uniforms: {
+    tDiffuse: { value: null }, uTime: { value: 0 },
+    uAberr: { value: mobile ? 0.0008 : 0.0017 }, uVig: { value: 0.55 }, uGrain: { value: 0.026 },
+  },
+  vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse; uniform float uTime,uAberr,uVig,uGrain; varying vec2 vUv;
+    void main(){
+      vec2 c=vUv-0.5; float r2=dot(c,c);
+      vec2 off=c*r2*uAberr*22.0;
+      vec4 col;
+      col.r=texture2D(tDiffuse,vUv+off).r;
+      vec4 mid=texture2D(tDiffuse,vUv);
+      col.g=mid.g;
+      col.b=texture2D(tDiffuse,vUv-off).b;
+      col.a=mid.a;
+      col.rgb*=clamp(1.0-uVig*r2*1.55,0.0,1.0);
+      float g=fract(sin(dot(vUv*vec2(1023.0,769.0)+uTime,vec2(12.9898,78.233)))*43758.5453);
+      col.rgb+=(g-0.5)*uGrain;
+      gl_FragColor=col;
+    }`,
+};
+const grade = new ShaderPass(gradeShader);
+composer.addPass(grade);
+composer.addPass(new OutputPass());
+
+/* ────────────────── resize ────────────────── */
+function resize() {
+  const w = Math.max(1, stage.clientWidth), h = Math.max(1, stage.clientHeight);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  renderer.setPixelRatio(DPR);
+  renderer.setSize(w, h, false);
+  composer.setPixelRatio(DPR);
+  composer.setSize(w, h);
+  bloom.setSize(w, h);
+  packetU.uSize.value = (mobile ? 34 : 46) * DPR;
+}
+resize();
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(resize, 140); });
+/* the stage also changes size when webfonts land or the layout reflows */
+if ('ResizeObserver' in window) new ResizeObserver(() => resize()).observe(stage);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { resize(); drawReceipt(VERDICTS[vi]); });
+
+/* ────────────────── raycast interaction on lanes ────────────────── */
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+let hovered = -1;
+canvas.addEventListener('pointermove', (e) => {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hits = ray.intersectObjects(lanes.map(l => l.orb), false);
+  const idx = hits.length ? lanes.findIndex(l => l.orb === hits[0].object) : -1;
+  if (idx !== hovered) {
+    hovered = idx;
+    canvas.style.cursor = idx >= 0 ? 'pointer' : '';
+    Object.values(tags).forEach(t => t.classList.remove('hot'));
+    if (idx >= 0) tags[lanes[idx].id].classList.add('hot');
+  }
+});
+canvas.addEventListener('pointerleave', () => { hovered = -1; canvas.style.cursor = ''; });
+canvas.addEventListener('click', () => { if (hovered >= 0) jumpTo(hovered); });
+
+/* ────────────────── timeline: the story of one admission ────────────────── */
+const PHASES = [
+  { id: 'INTAKE',  len: 2.0, msg: () => T('msg.intake') },
+  { id: 'POLICY',  len: 2.3, msg: v => T('msg.policy.' + v.id) },
+  { id: 'VERDICT', len: 0.7, msg: v => T('msg.verdict', { id: v.id, score: v.score, risk: v.risk }) },
+  { id: 'RECEIPT', len: 2.0, msg: () => T('msg.receipt') },
+  { id: 'HANDOFF', len: 1.3, msg: v => T('msg.handoff.' + v.id) },
+];
+const CYCLE = PHASES.reduce((a, p) => a + p.len, 0);
+let vi = 0, tl = 0, phaseIdx = -1, lastVi = -1, jumpRequest = -1;
+let tiltCur = 0, tiltGoal = 0, pulseT = 2, glowA = 0, receiptA = 0, receiptScale = 0.7;
+
+function jumpTo(i) { jumpRequest = i; }
+function applyVerdict(v) {
+  packetU.uLaneX.value = v.x;
+  packetU.uVerdict.value.copy(v.color);
+  groundU.uPulseColor.value.copy(v.color);
+  membraneU.uColor.value.copy(v.color).lerp(C.teal, 0.35);
+  verdictLight.color.copy(v.color);
+  drawReceipt(v);
+  hud.decision.textContent = v.id.toUpperCase();
+  hud.decision.style.color = '#' + v.color.getHexString();
+  hud.decision.style.textShadow = '0 0 22px #' + v.color.getHexString() + '66';
+  hud.score.textContent = String(v.score);
+  hud.risk.textContent = v.risk;
+  hud.find.textContent = String(v.findings);
+  hud.bar.style.width = v.score + '%';
+  hud.bar.style.background = '#' + v.color.getHexString();
+  Object.entries(tags).forEach(([k, el]) => { el.dataset.active = String(k === v.id); });
+}
+
+/* ────────────────── frame loop ────────────────── */
+let prevT = performance.now();
+const tick = () => { const n = performance.now(); const d = (n - prevT) / 1000; prevT = n; return d; };
+let running = true, elapsed = 0, raf = 0;
+let smooth = 16.7, steps = 0, frames = 0, cooldown = 0;
+const DPR_MAX = Math.min(devicePixelRatio || 1, mobile ? 1.5 : 1.9);
+const tmp = new THREE.Vector3();
+
+function updateTags() {
+  const r = stage.getBoundingClientRect();
+  for (const l of lanes) {
+    const el = tags[l.id];
+    tmp.copy(l.anchor).applyMatrix4(root.matrixWorld).project(camera);
+    const behind = tmp.z > 1;
+    const halfW = el.offsetWidth / 2 + 10;
+    const px = Math.min(r.width - halfW, Math.max(halfW, (tmp.x * 0.5 + 0.5) * r.width));
+    const py = Math.min(r.height - 104, Math.max(24, (-tmp.y * 0.5 + 0.5) * r.height - 34));
+    el.style.transform = 'translate(-50%,-50%) translate(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px)';
+    /* three labels at once sat on top of the monument — show the active or hovered one */
+    const shown = el.dataset.active === 'true' || l === lanes[hovered];
+    el.style.opacity = (behind || !shown) ? '0' : '1';
+  }
+}
+
+function frame() {
+  raf = requestAnimationFrame(frame);
+  const raw = tick();
+  const dt = Math.min(raw, 0.05);        /* smoothing/lerps */
+  const story = Math.min(raw, 0.25);     /* narrative clock */
+  elapsed += dt;
+
+  /* adaptive quality — ignore the warm-up frames where shaders still compile */
+  frames++; if (cooldown > 0) cooldown--;
+  smooth += ((dt * 1000) - smooth) * 0.04;
+  if (frames > 90 && !cooldown && smooth > 30 && steps < 3) {
+    steps++; cooldown = 120;
+    DPR = Math.max(0.9, DPR_MAX * (1 - steps * 0.18));
+    bloom.strength = Math.max(0.22, bloom.strength * 0.88);
+    resize();
+  }
+
+  /* auto-rotate resume */
+  if (!reduce && !controls.autoRotate && idleAt && performance.now() > idleAt) {
+    controls.autoRotate = true; idleAt = 0;
+  }
+
+  /* ── timeline ── */
+  if (!reduce) tl += story;
+  if (jumpRequest >= 0) { vi = jumpRequest; jumpRequest = -1; tl = PHASES[0].len + PHASES[1].len * 0.72; }
+  if (tl > CYCLE) { tl -= CYCLE; vi = (vi + 1) % VERDICTS.length; }
+  const v = VERDICTS[vi];
+  if (vi !== lastVi) { lastVi = vi; applyVerdict(v); phaseIdx = -1; }
+
+  let acc = 0, pi = 0, local = 0;
+  for (let i = 0; i < PHASES.length; i++) {
+    if (tl < acc + PHASES[i].len) { pi = i; local = (tl - acc) / PHASES[i].len; break; }
+    acc += PHASES[i].len; pi = i; local = 1;
+  }
+  if (pi !== phaseIdx) {
+    phaseIdx = pi;
+    hud.phase.textContent = T('phase.' + PHASES[pi].id);
+    hud.msg.textContent = PHASES[pi].msg(v);
+    if (PHASES[pi].id === 'VERDICT') { pulseT = 0; membraneU.uFlash.value = 1; }
+  }
+  const ph = PHASES[pi].id;
+
+  /* beam tilt: level while reading, settles to the verdict while policy runs */
+  tiltGoal = (ph === 'INTAKE') ? Math.sin(elapsed * 0.9) * 0.02
+           : (ph === 'POLICY') ? v.tilt * (0.35 + 0.65 * local)
+           : v.tilt;
+  tiltCur += (tiltGoal - tiltCur) * Math.min(1, dt * 3.4);
+  beamPivot.rotation.z = tiltCur + (ph === 'POLICY' ? Math.sin(elapsed * 11) * 0.004 * (1 - local) : 0);
+  pans[0].arm.rotation.z = -beamPivot.rotation.z;
+  pans[1].arm.rotation.z = -beamPivot.rotation.z;
+
+  /* pan glow tracks which side is winning */
+  glowA += (((ph === 'POLICY' || ph === 'VERDICT') ? 0.26 : 0.04) - glowA) * Math.min(1, dt * 3);
+  const lean = THREE.MathUtils.clamp(tiltCur / 0.34, -1, 1);
+  pans[0].glow.opacity = glowA * Math.max(0.12, 0.5 + lean * 0.5);
+  pans[1].glow.opacity = glowA * Math.max(0.12, 0.5 - lean * 0.5);
+
+  /* membrane */
+  membraneU.uTime.value = elapsed;
+  const openGoal = (ph === 'HANDOFF') ? 0.45 : 1.0;
+  membraneU.uOpen.value += (openGoal - membraneU.uOpen.value) * Math.min(1, dt * 2.2);
+  membraneU.uFlash.value *= Math.pow(0.006, dt);
+
+  /* ground pulse */
+  groundU.uTime.value = elapsed;
+  if (pulseT < 2) pulseT += dt * 0.62;
+  groundU.uPulse.value = pulseT;
+
+  /* packets */
+  packetU.uTime.value = elapsed;
+  packetU.uDecided.value += (((ph === 'INTAKE') ? 0.0 : 1.0) - packetU.uDecided.value) * Math.min(1, dt * 2.4);
+  packetU.uFlow.value += (((ph === 'RECEIPT' || ph === 'HANDOFF') ? 1.35 : 1.0) - packetU.uFlow.value) * Math.min(1, dt * 2);
+
+  /* lanes */
+  for (const l of lanes) {
+    const on = l.id === v.id && (ph === 'VERDICT' || ph === 'RECEIPT' || ph === 'HANDOFF');
+    const hot = l === lanes[hovered];
+    const target = on ? 1 : (hot ? 0.34 : 0.035);
+    l.shaftU.uOn.value += (target - l.shaftU.uOn.value) * Math.min(1, dt * 3.6);
+    l.shaftU.uTime.value = elapsed;
+    l.ring.opacity += ((on ? 0.95 : hot ? 0.5 : 0.18) - l.ring.opacity) * Math.min(1, dt * 4);
+    l.ring2.opacity = l.ring.opacity * 0.7;
+    l.orb.material.emissiveIntensity += ((on ? 2.6 : hot ? 1.1 : 0.35) - l.orb.material.emissiveIntensity) * Math.min(1, dt * 4);
+    l.halo.material.opacity += ((on ? 0.34 : 0.08) - l.halo.material.opacity) * Math.min(1, dt * 4);
+    const bob = Math.sin(elapsed * 1.5 + l.x) * 0.03;
+    l.orb.position.y = 0.30 + bob + (on ? 0.06 : 0);
+    l.halo.position.y = l.orb.position.y;
+    l.orb.rotation.y = elapsed * 0.5; l.orb.rotation.x = Math.sin(elapsed * 0.32) * 0.25;
+    l.halo.scale.setScalar(1 + (on ? Math.sin(elapsed * 3.4) * 0.09 : 0));
+    if (on) { verdictLight.position.set(l.x, 0.05, 1.7); }
+  }
+  verdictLight.intensity += (((ph === 'VERDICT') ? (mobile ? 10 : 17) : (ph === 'RECEIPT' ? (mobile ? 4 : 6) : 0)) - verdictLight.intensity) * Math.min(1, dt * 4);
+
+  /* receipt plate: stamps in on VERDICT, holds, lifts away on HANDOFF */
+  const wantR = (ph === 'RECEIPT') ? 1 : (ph === 'VERDICT' ? Math.min(1, local * 2.6) : (ph === 'HANDOFF' ? Math.max(0, 1 - local * 1.5) : 0));
+  receiptA += (wantR - receiptA) * Math.min(1, dt * 5);
+  receiptMat.opacity = THREE.MathUtils.clamp(receiptA, 0, 1) * 0.98;
+  const punch = (ph === 'VERDICT') ? 1 + (1 - local) * 0.10 : 1;   /* stamp overshoot */
+  receiptScale += ((0.80 + receiptA * 0.20) * punch - receiptScale) * Math.min(1, dt * 9);
+  receipt.scale.setScalar(receiptScale);
+  receipt.position.y = 1.30 + receiptA * 0.09 + (ph === 'HANDOFF' ? (1 - receiptA) * 0.35 : 0);
+  receipt.quaternion.copy(camera.quaternion);
+
+  /* fulcrum + collar life */
+  fulcrum.rotation.y = elapsed * 0.42;
+  collar.rotation.z = elapsed * 0.2;
+
+  /* light drift so specular highlights move across the bronze */
+  key.position.set(3.4 + Math.sin(elapsed * 0.22) * 0.7, 4.8, 3.6 + Math.cos(elapsed * 0.18) * 0.8);
+  rimL.intensity = 12 + Math.sin(elapsed * 1.1) * 2.0;
+
+  grade.uniforms.uTime.value = elapsed;
+
+  controls.update();
+  updateTags();
+  composer.render();
+}
+
+/* ────────────────── lifecycle: only render when visible ────────────────── */
+function renderOnce() { controls.update(); updateTags(); composer.render(); }
+function start() {
+  if (reduce) { renderOnce(); return; }          /* reduced motion never enters the loop */
+  if (!running) { running = true; prevT = performance.now(); frame(); }
+}
+function stop() { running = false; cancelAnimationFrame(raf); }
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) start(); else stop(); });
+  }, { threshold: 0.04 }).observe(stage);
+}
+document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
+
+applyVerdict(VERDICTS[0]);
+if (reduce) {
+  hud.phase.textContent = T('hud.static');
+  hud.msg.textContent = T('hud.staticmsg');
+  running = false;
+  /* one settled frame: the scales hold the approve verdict */
+  beamPivot.rotation.z = VERDICTS[0].tilt;
+  pans[0].arm.rotation.z = pans[1].arm.rotation.z = -VERDICTS[0].tilt;
+  membraneU.uOpen.value = 0.8;
+  lanes[0].shaftU.uOn.value = 0.9;
+  lanes[0].ring.opacity = 0.9; lanes[0].orb.material.emissiveIntensity = 2.2;
+  tags.approve.dataset.active = 'true';
+  renderOnce(); requestAnimationFrame(renderOnce);
+} else {
+  running = false; start();
+  setTimeout(() => { if (hint) hint.style.opacity = '0'; }, 9000);
+}
+
+/* the HUD caption follows the active language without waiting for the next phase */
+if (window.__i18n) {
+  window.__i18n.onChange(() => {
+    const v = VERDICTS[vi];
+    if (phaseIdx >= 0 && PHASES[phaseIdx]) {
+      hud.phase.textContent = T('phase.' + PHASES[phaseIdx].id);
+      hud.msg.textContent = PHASES[phaseIdx].msg(v);
+    } else if (reduce) {
+      hud.phase.textContent = T('hud.static');
+      hud.msg.textContent = T('hud.staticmsg');
+    }
+  });
+}
+
+/* let the verdict explorer drive the 3D gate */
+window.__themisGate = {
+  show(id) {
+    const i = VERDICTS.findIndex(v => v.id === id);
+    if (i >= 0) { jumpTo(i); start(); }
+  },
+};
+
+/* release GPU resources on teardown */
+addEventListener('pagehide', () => { stop(); renderer.dispose(); });
+}
+</script>
+</body>
+</html>

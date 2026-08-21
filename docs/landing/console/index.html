@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>THEMIS — Admission console</title>
+<meta name="description" content="Operator console for the THEMIS admission gate: run a real /invoke, re-verify the receipt signature in the browser, and read exactly what was cryptographically checked."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0b0f;--panel:#12141a;--panel2:#161922;--line:#2a3140;--ink:#e8eaef;--muted:#8a93a5;--faint:#5c6578;
+  --gold:#c9a46a;--gold2:#e0c08a;--approve:#3ddc84;--review:#ffcc33;--reject:#e74c3c;--med:#f0a050;--info:#6fb4ff;
+  --serif:"Cormorant Garamond",Georgia,serif;--sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans)}
+body{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+a{color:var(--gold2);text-decoration:none}
+button,select,textarea,input{font:inherit}
+:focus-visible{outline:2px solid var(--gold2);outline-offset:2px;border-radius:6px}
+
+/* ── sidebar ── */
+.side{border-right:1px solid var(--line);background:linear-gradient(180deg,#0d0f14,#0a0b0f);padding:22px 16px;display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px}
+.brand svg{width:34px;height:34px}
+.brand b{font-family:var(--serif);font-size:26px;letter-spacing:.08em;color:var(--gold);font-weight:700}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav button{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--muted);
+  font-size:14px;border:1px solid transparent;background:none;cursor:pointer;text-align:left;width:100%;transition:.15s}
+.nav button:hover{background:rgba(201,164,106,.06);color:var(--ink)}
+.nav button[aria-current=page]{border-color:rgba(201,164,106,.45);background:rgba(201,164,106,.1);color:var(--gold2)}
+.nav button .n{margin-left:auto;font:500 10px var(--mono);color:var(--faint)}
+.nav button[aria-current=page] .n{color:var(--gold)}
+.side-foot{margin-top:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.side-foot .ws{font-size:12px;color:var(--muted);margin-bottom:8px}
+.side-foot .user{display:flex;align-items:center;gap:10px}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#6a4e22);display:grid;place-items:center;font-size:11px;font-weight:700;color:#120e08}
+.user-meta{font-size:12px}.user-meta small{display:block;color:var(--faint)}
+.status{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+.dot.ok{background:var(--approve);box-shadow:0 0 8px var(--approve)}
+.dot.bad{background:var(--reject);box-shadow:0 0 8px var(--reject)}
+
+/* ── main ── */
+.main{padding:22px 28px 40px;overflow:auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+.top h1{margin:0;font-family:var(--serif);font-size:28px;letter-spacing:.04em;color:var(--gold2);font-weight:700}
+.lede{margin:0 0 18px;color:var(--muted);font-size:13px;max-width:78ch}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:9px 14px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  font-size:13px;cursor:pointer;transition:.15s}
+.btn:hover:not(:disabled){border-color:rgba(201,164,106,.5);background:var(--panel2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-gold{background:linear-gradient(135deg,var(--gold2),#a9803c);border-color:transparent;color:#140f07;font-weight:600}
+.btn-gold:hover:not(:disabled){box-shadow:0 4px 18px rgba(201,164,106,.28)}
+.btn.sm{padding:5px 9px;font:500 11px var(--mono);letter-spacing:.04em}
+
+.view[hidden]{display:none}
+.grid{display:grid;grid-template-columns:1fr 380px;gap:14px;align-items:start}
+.card{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px}
+.card h2{margin:0 0 14px;font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.card.span{grid-column:1/-1}
+.hint{color:var(--faint);font-size:12px;line-height:1.6}
+.hint code{font-family:var(--mono);color:var(--gold)}
+
+/* verdict hero */
+.receipt{grid-column:1/-1;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,var(--panel2),var(--panel));padding:20px;
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.verdict{display:flex;align-items:center;gap:16px}
+.shield{width:62px;height:62px;border-radius:14px;border:2px solid var(--faint);display:grid;place-items:center;
+  font-size:30px;color:var(--muted);flex:none}
+.badge{display:inline-block;padding:5px 12px;border-radius:7px;font:700 13px var(--mono);letter-spacing:.14em;
+  background:rgba(255,255,255,.05);color:var(--muted)}
+.vsub{margin-top:7px;color:var(--muted);font-size:13px;max-width:52ch}
+.meta{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:10px 22px;font-size:11px;color:var(--faint);align-content:center}
+.meta b{display:block;font:500 12px var(--mono);color:var(--ink);margin-top:3px;word-break:break-all}
+.sigchip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:7px;font:600 10px var(--mono);letter-spacing:.08em;margin-top:8px}
+.sigchip.ok{background:rgba(61,220,132,.12);color:var(--approve)}
+.sigchip.wait{background:rgba(111,180,255,.12);color:var(--info)}
+.sigchip.na{background:rgba(255,255,255,.05);color:var(--muted)}
+.sigchip.bad{background:rgba(231,76,60,.14);color:var(--reject)}
+
+/* findings */
+.sevbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.pill{font:600 10px var(--mono);letter-spacing:.08em;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--muted)}
+.pill.critical{background:rgba(231,76,60,.14);color:#ff8d80}
+.pill.high{background:rgba(240,160,80,.14);color:var(--med)}
+.pill.medium{background:rgba(255,204,51,.13);color:var(--review)}
+.pill.low{background:rgba(111,180,255,.12);color:var(--info)}
+.findings{display:flex;flex-direction:column;gap:9px;max-height:430px;overflow:auto}
+.finding{border:1px solid var(--line);border-left-width:3px;border-radius:10px;padding:11px 13px;background:var(--panel2)}
+.finding.critical{border-left-color:var(--reject)}
+.finding.high{border-left-color:var(--med)}
+.finding.medium{border-left-color:var(--review)}
+.finding.low{border-left-color:var(--info)}
+.finding .row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:5px}
+.finding .code{font:600 12px var(--mono);color:var(--ink)}
+.finding .sev{font:600 9px var(--mono);letter-spacing:.12em;padding:3px 7px;border-radius:5px}
+.finding.critical .sev{background:rgba(231,76,60,.16);color:#ff8d80}
+.finding.high .sev{background:rgba(240,160,80,.16);color:var(--med)}
+.finding.medium .sev{background:rgba(255,204,51,.14);color:var(--review)}
+.finding.low .sev{background:rgba(111,180,255,.14);color:var(--info)}
+.finding p{margin:0;color:var(--muted);font-size:13px}
+.finding .rem{margin-top:7px;font-size:12.5px;color:var(--ink)}
+.finding .rem b{display:block;font:600 9px var(--mono);letter-spacing:.12em;color:var(--gold);margin-bottom:2px}
+.finding .asi{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.finding .asi span{font:500 9px var(--mono);padding:3px 6px;border-radius:5px;background:rgba(255,85,119,.1);color:#ff8fa6}
+
+/* score */
+.big{font-family:var(--serif);font-size:58px;line-height:1;color:var(--gold2)}
+.tier{margin:6px 0 16px;font-size:13px;color:var(--muted)}
+.bar-row{margin-bottom:11px}
+.bar-row .lab{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:5px}
+.track{height:5px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+
+/* proof matrix */
+.proof{display:flex;flex-direction:column;gap:2px}
+.prow{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:11px 2px;border-bottom:1px solid rgba(255,255,255,.05)}
+.prow:last-child{border-bottom:0}
+.prow .k{font-size:13px}
+.prow .k small{display:block;color:var(--faint);font-size:11.5px;margin-top:2px;max-width:60ch}
+.prow .v{font:600 12px var(--mono);text-align:right;white-space:nowrap}
+.v.yes{color:var(--approve)} .v.no{color:var(--reject)} .v.na{color:var(--faint)} .v.num{color:var(--ink)}
+.digest{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border:1px solid var(--line);
+  border-radius:10px;background:var(--panel2)}
+.digest code{flex:1;min-width:0;font:500 11px var(--mono);color:var(--gold2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.05)}
+th{font:600 9.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+td.mono{font-family:var(--mono);font-size:12px}
+td.right{text-align:right;font-family:var(--mono);font-size:12px}
+tr:last-child td{border-bottom:0}
+.ok{color:var(--approve)} .warn{color:var(--review)} .bad{color:var(--reject)} .dim{color:var(--faint)}
+
+/* composer */
+textarea{width:100%;min-height:340px;resize:vertical;border:1px solid var(--line);border-radius:10px;
+  background:#0b0d12;color:var(--ink);font-family:var(--mono);font-size:12px;line-height:1.55;padding:12px}
+.row2{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+pre.out{margin:0;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0b0d12;
+  font-family:var(--mono);font-size:11.5px;line-height:1.6;color:var(--muted);overflow:auto;max-height:300px;white-space:pre-wrap;word-break:break-all}
+.err{margin-top:14px;padding:11px 13px;border:1px solid rgba(231,76,60,.4);border-radius:10px;
+  background:rgba(231,76,60,.08);color:#ff9c92;font-size:13px}
+.demo{margin-bottom:14px;padding:11px 13px;border:1px solid rgba(201,164,106,.4);border-radius:10px;
+  background:rgba(201,164,106,.07);color:var(--gold2);font-size:13px;line-height:1.6}
+.demo b{color:var(--gold)}
+.demo code{font-family:var(--mono);font-size:12px}
+select{padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:13px}
+.kbd{font:500 10px var(--mono);border:1px solid var(--line);border-radius:5px;padding:2px 5px;color:var(--faint)}
+
+@media(max-width:1100px){ .grid{grid-template-columns:1fr} }
+@media(max-width:820px){
+  body{grid-template-columns:1fr}
+  .side{flex-direction:row;align-items:center;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line);padding:12px}
+  .nav{flex-direction:row;flex-wrap:wrap;gap:4px}
+  .nav button{padding:8px 10px;font-size:12.5px}
+  .nav button .n{display:none}
+  .side-foot{margin:0;width:100%}
+  .main{padding:16px}
+  .meta{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<aside class="side">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="32" r="30" fill="none" stroke="#c9a46a" stroke-width="2"/>
+      <path d="M20 44 L32 14 L44 44" fill="none" stroke="#c9a46a" stroke-width="2.5"/>
+      <circle cx="32" cy="28" r="4" fill="#c9a46a"/>
+      <path d="M18 44 H46" stroke="#c9a46a" stroke-width="2"/>
+    </svg>
+    <b>THEMIS</b>
+  </div>
+  <!-- Every entry below is backed by data this agent actually returns. -->
+  <nav class="nav" id="nav" aria-label="Console sections">
+    <button type="button" data-view="admission" aria-current="page">Admission<span class="n" id="n-admission"></span></button>
+    <button type="button" data-view="attestations">Attestations<span class="n" id="n-attest"></span></button>
+    <button type="button" data-view="policy">Policy<span class="n" id="n-policy"></span></button>
+    <button type="button" data-view="runtime">Runtime<span class="n" id="n-runtime"></span></button>
+    <button type="button" data-view="agent">Agent<span class="n" id="n-agent"></span></button>
+    <button type="button" data-view="dossier">Dossier</button>
+  </nav>
+  <div class="side-foot">
+    <div class="ws">Workspace · local provider</div>
+    <div class="user">
+      <div class="avatar">TH</div>
+      <div class="user-meta">operator<small>Admission console</small></div>
+    </div>
+    <div class="status"><span class="dot" id="health-dot"></span><span id="health-label">checking…</span></div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="top">
+    <h1 id="view-title">THEMIS · ADMISSION RECEIPT</h1>
+    <div class="actions">
+      <button class="btn" id="btn-safe" type="button">Safe example</button>
+      <button class="btn" id="btn-unsafe" type="button">Unsafe example</button>
+      <button class="btn" id="btn-attested" type="button">Attested example</button>
+      <button class="btn btn-gold" id="btn-run" type="button">Run admission</button>
+      <button class="btn" id="btn-dl" type="button" disabled>Download receipt</button>
+    </div>
+  </div>
+  <p class="lede" id="view-lede"></p>
+  <div class="demo" id="demo" hidden></div>
+  <div class="err" id="err" hidden></div>
+
+  <!-- ─────────── admission ─────────── -->
+  <section class="view grid" id="view-admission">
+    <div class="receipt">
+      <div class="verdict">
+        <div class="shield" id="shield">—</div>
+        <div>
+          <div class="badge" id="decision-badge">IDLE</div>
+          <div class="vsub" id="subtitle">Load a dossier and run a real <code>/invoke</code> against this agent.</div>
+          <div class="sigchip na" id="sigchip">RECEIPT NOT YET SIGNED</div>
+        </div>
+      </div>
+      <div class="meta">
+        <div>Capability<b id="m-cap">agent.security.supply-chain.audit@v1</b></div>
+        <div>Evaluated (browser clock)<b id="m-ts">—</b></div>
+        <div>Candidate<b id="m-cand">—</b></div>
+        <div>Signature<b id="m-sig">—</b></div>
+      </div>
+    </div>
+    <section class="card">
+      <h2>Findings</h2>
+      <div class="sevbar" id="sevbar"></div>
+      <div class="findings" id="findings"><div class="hint">No receipt yet.</div></div>
+    </section>
+    <section class="card">
+      <h2>Score &amp; risk</h2>
+      <div class="big" id="score">—</div>
+      <div class="tier" id="tier"></div>
+      <div class="bars" id="bars"></div>
+      <p class="hint">Bars group the returned findings by code prefix — a reading of this receipt, not a second
+        backend scorecard. The number above is the auditor's own score.</p>
+    </section>
+  </section>
+
+  <!-- ─────────── attestations ─────────── -->
+  <section class="view grid" id="view-attestations" hidden>
+    <section class="card span">
+      <h2>What was cryptographically verified</h2>
+      <div class="proof" id="proof"><div class="hint">Run admission to populate.</div></div>
+      <div class="digest" id="digest-row" hidden>
+        <span class="hint" style="white-space:nowrap">declaration digest</span>
+        <code id="perm-digest">—</code>
+        <span class="pill" id="digest-match"></span>
+        <button class="btn sm" id="btn-copy-digest" type="button">COPY</button>
+      </div>
+    </section>
+    <section class="card span">
+      <h2>Proof vs prose</h2>
+      <p class="hint">
+        A URL is a claim. A URL with a digest identifies an artifact. A URL with a digest <em>and</em> a signature is
+        a claim someone put their key behind — the only one of the three this gate can check without fetching
+        anything. Unsigned evidence and an unsigned permission declaration are declarations, and this panel says so
+        rather than rendering them as green ticks.
+      </p>
+      <table id="evidence-table"><thead><tr><th>Evidence kind</th><th>Digest-bound</th><th>Attested</th><th>Issuer</th></tr></thead><tbody></tbody></table>
+    </section>
+  </section>
+
+  <!-- ─────────── policy ─────────── -->
+  <section class="view grid" id="view-policy" hidden>
+    <section class="card span">
+      <h2>Effective procurement policy</h2>
+      <p class="hint">Read from the dossier you submitted — this is the buyer's policy the verdict was measured
+        against, not a server-side default.</p>
+      <table id="policy-table"><thead><tr><th>Requirement</th><th>Value</th><th>Outcome</th></tr></thead><tbody></tbody></table>
+    </section>
+    <section class="card span">
+      <h2>Declared permissions</h2>
+      <table id="perm-table"><thead><tr><th>Permission</th><th>Declared</th><th>Contradicted at runtime</th></tr></thead><tbody></tbody></table>
+    </section>
+  </section>
+
+  <!-- ─────────── runtime ─────────── -->
+  <section class="view grid" id="view-runtime" hidden>
+    <section class="card">
+      <h2>Metis advisory</h2>
+      <div class="proof" id="metis-proof"><div class="hint">No verdict yet.</div></div>
+      <div class="row2">
+        <button class="btn sm" id="btn-poll" type="button" disabled>POLL NOW</button>
+        <span class="hint" id="poll-note">A pending job is polled automatically until it settles.</span>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Observer statement builder</h2>
+      <p class="hint">The exact canonical bytes an observer signs to contradict one declared permission. Bound to
+        the declaration digest, so a fixed declaration retires old reports.</p>
+      <div class="row2">
+        <select id="violation-permission" aria-label="Permission to contradict"></select>
+        <button class="btn sm" id="btn-copy-statement" type="button">COPY BYTES</button>
+      </div>
+      <pre class="out" id="violation-statement">Run admission first.</pre>
+    </section>
+  </section>
+
+  <!-- ─────────── agent ─────────── -->
+  <section class="view grid" id="view-agent" hidden>
+    <section class="card span">
+      <h2>Provider identity and runtime</h2>
+      <div class="proof" id="agent-proof"><div class="hint">Loading /health…</div></div>
+    </section>
+  </section>
+
+  <!-- ─────────── dossier ─────────── -->
+  <section class="view grid" id="view-dossier" hidden>
+    <section class="card">
+      <h2>Invoke envelope</h2>
+      <textarea id="payload" spellcheck="false" aria-label="Invoke envelope JSON"></textarea>
+      <div class="row2">
+        <button class="btn btn-gold" id="btn-run2" type="button">Evaluate</button>
+        <span class="hint">POST same-origin <code>/invoke</code> · <span class="kbd">⌘/Ctrl + Enter</span></span>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Raw receipt</h2>
+      <pre class="out" id="raw">Nothing submitted yet.</pre>
+    </section>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const state = { result: null, raw: null, sig: null, sent: null, health: null, digest: null,
+                pollTimer: null, literalResult: null, literalSent: null, demo: null };
+
+const PERMISSIONS = [
+  "execute_code", "access_secrets", "spend_money",
+  "write_external_systems", "unrestricted_network", "read_personal_data",
+];
+const SEV_W = { critical: 40, high: 22, medium: 10, low: 4 };
+const SEV_ORDER = ["critical", "high", "medium", "low"];
+const AREA = {
+  transport: "Security controls", schema: "Security controls", identity: "Security controls",
+  permissions: "Safety controls", data: "Safety controls",
+  evidence: "Evidence & transparency", verification: "Evidence & transparency",
+  economy: "Operational controls", policy: "Operational controls",
+};
+
+const VIEWS = {
+  admission: ["THEMIS · ADMISSION RECEIPT", "One dossier in, one signed verdict out. The signature below is re-checked in this browser against the key /health reports."],
+  attestations: ["ATTESTATIONS", "What the gate verified with cryptography, separated from what the candidate merely declared."],
+  policy: ["POLICY", "The buyer's procurement policy carried in the dossier, and how the candidate measured against it."],
+  runtime: ["RUNTIME", "Asynchronous Metis advisory, and the statement an observer signs when a declaration turns out to be false."],
+  agent: ["AGENT", "Provider identity, Metis wiring, and whether this deployment can safely run more than one replica."],
+  dossier: ["DOSSIER", "The exact envelope POSTed to /invoke, and the raw receipt it returned."],
+};
+
+/* ── canonical JSON, matching the signer's json.dumps(sort_keys, separators=(',',':')) ──
+   Numbers are kept as the literal text they arrived as. Python prints a float
+   as 20.0 where JSON.stringify prints 20, and re-canonicalising through
+   JSON.parse loses exactly that distinction — which is enough to make a
+   perfectly valid signature look broken. */
+function num(literal) { return { __n: literal }; }
+
+function canonical(value) {
+  if (value === null || typeof value === "boolean" || typeof value === "number") return JSON.stringify(value);
+  if (typeof value === "string") return JSON.stringify(value);
+  if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
+  if (typeof value === "object" && typeof value.__n === "string") return value.__n;
+  const keys = Object.keys(value).sort();
+  return "{" + keys.map((k) => JSON.stringify(k) + ":" + canonical(value[k])).join(",") + "}";
+}
+
+/* Minimal JSON reader that preserves number literals; everything else behaves
+   like JSON.parse. Used only for signature re-checking. */
+function parseKeepNumbers(text) {
+  let i = 0;
+  const ws = () => { while (i < text.length && " \t\n\r".includes(text[i])) i++; };
+  const fail = (what) => { throw new SyntaxError(`${what} at ${i}`); };
+  function value() {
+    ws();
+    const c = text[i];
+    if (c === "{") {
+      i++; const out = {}; ws();
+      if (text[i] === "}") { i++; return out; }
+      for (;;) {
+        ws();
+        if (text[i] !== '"') fail("expected key");
+        const key = string();
+        ws();
+        if (text[i] !== ":") fail("expected colon");
+        i++;
+        out[key] = value();
+        ws();
+        if (text[i] === ",") { i++; continue; }
+        if (text[i] === "}") { i++; return out; }
+        fail("expected , or }");
+      }
+    }
+    if (c === "[") {
+      i++; const out = []; ws();
+      if (text[i] === "]") { i++; return out; }
+      for (;;) {
+        out.push(value());
+        ws();
+        if (text[i] === ",") { i++; continue; }
+        if (text[i] === "]") { i++; return out; }
+        fail("expected , or ]");
+      }
+    }
+    if (c === '"') return string();
+    if (text.startsWith("true", i)) { i += 4; return true; }
+    if (text.startsWith("false", i)) { i += 5; return false; }
+    if (text.startsWith("null", i)) { i += 4; return null; }
+    const start = i;
+    if (text[i] === "-") i++;
+    while (i < text.length && "0123456789.eE+-".includes(text[i])) i++;
+    if (i === start) fail("unexpected token");
+    return num(text.slice(start, i));
+  }
+  function string() {
+    const start = i;
+    i++;
+    while (i < text.length) {
+      if (text[i] === "\\") { i += 2; continue; }
+      if (text[i] === '"') { i++; return JSON.parse(text.slice(start, i)); }
+      i++;
+    }
+    fail("unterminated string");
+  }
+  const out = value();
+  ws();
+  if (i !== text.length) fail("trailing data");
+  return out;
+}
+
+async function sha256Hex(text) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function b64ToBytes(value) {
+  const raw = atob(value);
+  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+}
+
+/* Re-check the receipt the way the Hub does: Ed25519 over the canonical
+   {capability_id, product_id, input_sha256, result}. A browser without Ed25519
+   in WebCrypto says so instead of showing a scary red state. */
+async function verifyReceipt() {
+  const chip = $("sigchip");
+  const setChip = (cls, text) => { chip.className = "sigchip " + cls; chip.textContent = text; };
+  if (!state.sig || !state.literalSent || !state.literalResult || !state.health?.provider_pubkey) {
+    setChip("na", "RECEIPT NOT YET SIGNED");
+    return;
+  }
+  setChip("wait", "RE-CHECKING SIGNATURE…");
+  try {
+    const inputSha = await sha256Hex(canonical(state.literalSent.input));
+    const message = canonical({
+      capability_id: state.sent.capability_id,
+      product_id: state.sent.product_id,
+      input_sha256: inputSha,
+      result: state.literalResult,
+    });
+    const key = await crypto.subtle.importKey(
+      "raw", b64ToBytes(state.health.provider_pubkey), { name: "Ed25519" }, false, ["verify"]
+    );
+    const ok = await crypto.subtle.verify(
+      "Ed25519", key, b64ToBytes(state.sig), new TextEncoder().encode(message)
+    );
+    if (ok) setChip("ok", "SIGNATURE VERIFIED IN BROWSER");
+    else setChip("bad", "SIGNATURE DID NOT VERIFY");
+  } catch (e) {
+    setChip("na", "LOCAL RE-CHECK UNAVAILABLE");
+  }
+}
+
+/* ── rendering ── */
+function tone(decision) {
+  if (decision === "approve") return { color: "var(--approve)", mark: "✓" };
+  if (decision === "review") return { color: "var(--review)", mark: "?" };
+  if (decision === "reject") return { color: "var(--reject)", mark: "✕" };
+  return { color: "var(--muted)", mark: "—" };
+}
+
+function row(parent, label, value, cls, note) {
+  const el = document.createElement("div");
+  el.className = "prow";
+  const k = document.createElement("div");
+  k.className = "k";
+  k.textContent = label;
+  if (note) { const s = document.createElement("small"); s.textContent = note; k.appendChild(s); }
+  const v = document.createElement("div");
+  v.className = "v " + (cls || "num");
+  v.textContent = value;
+  el.append(k, v);
+  parent.appendChild(el);
+  return el;
+}
+
+function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+function renderFindings(findings) {
+  const counts = Object.fromEntries(SEV_ORDER.map((s) => [s, 0]));
+  for (const f of findings) counts[f.severity] = (counts[f.severity] || 0) + 1;
+  const bar = $("sevbar");
+  clear(bar);
+  const total = document.createElement("span");
+  total.className = "pill";
+  total.textContent = findings.length ? `${findings.length} TOTAL` : "NO FINDINGS";
+  bar.appendChild(total);
+  for (const sev of SEV_ORDER) {
+    if (!counts[sev]) continue;
+    const p = document.createElement("span");
+    p.className = "pill " + sev;
+    p.textContent = `${counts[sev]} ${sev.toUpperCase()}`;
+    bar.appendChild(p);
+  }
+
+  const host = $("findings");
+  clear(host);
+  if (!findings.length) {
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = "Clean dossier — deterministic policy satisfied.";
+    host.appendChild(hint);
+    return;
+  }
+  for (const f of findings) {
+    const el = document.createElement("div");
+    el.className = "finding " + (f.severity || "low");
+    const head = document.createElement("div");
+    head.className = "row";
+    const code = document.createElement("span");
+    code.className = "code";
+    code.textContent = f.code || "";
+    const sev = document.createElement("span");
+    sev.className = "sev";
+    sev.textContent = String(f.severity || "").toUpperCase();
+    head.append(code, sev);
+    const msg = document.createElement("p");
+    msg.textContent = f.message || "";
+    el.append(head, msg);
+    if (f.remediation) {
+      const rem = document.createElement("div");
+      rem.className = "rem";
+      const b = document.createElement("b");
+      b.textContent = "REMEDIATION";
+      rem.append(b, document.createTextNode(f.remediation));
+      el.appendChild(rem);
+    }
+    if (Array.isArray(f.owasp) && f.owasp.length) {
+      const asi = document.createElement("div");
+      asi.className = "asi";
+      for (const code of f.owasp) {
+        const s = document.createElement("span");
+        s.textContent = code;
+        asi.appendChild(s);
+      }
+      el.appendChild(asi);
+    }
+    host.appendChild(el);
+  }
+}
+
+function renderBars(findings) {
+  const caps = { "Security controls": 40, "Safety controls": 30, "Evidence & transparency": 20, "Operational controls": 10 };
+  const lost = Object.fromEntries(Object.keys(caps).map((k) => [k, 0]));
+  for (const f of findings) {
+    const area = AREA[String(f.code || "").split(".")[0]] || "Operational controls";
+    lost[area] += SEV_W[f.severity] || 4;
+  }
+  const host = $("bars");
+  clear(host);
+  for (const [label, cap] of Object.entries(caps)) {
+    const score = Math.max(0, cap - lost[label]);
+    const wrap = document.createElement("div");
+    wrap.className = "bar-row";
+    const lab = document.createElement("div");
+    lab.className = "lab";
+    const l = document.createElement("span"); l.textContent = label;
+    const n = document.createElement("span"); n.textContent = `${score}/${cap}`;
+    lab.append(l, n);
+    const track = document.createElement("div");
+    track.className = "track";
+    const fill = document.createElement("div");
+    fill.className = "fill";
+    fill.style.width = Math.round((score / cap) * 100) + "%";
+    track.appendChild(fill);
+    wrap.append(lab, track);
+    host.appendChild(wrap);
+  }
+}
+
+async function renderAttestations() {
+  const host = $("proof");
+  clear(host);
+  const a = state.result?.attestations;
+  if (!a) {
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = "This receipt carries no attestation block — the agent predates it.";
+    host.appendChild(hint);
+    $("digest-row").hidden = true;
+    return;
+  }
+  const declared = a.evidence_declared || 0;
+  const verified = a.evidence_verified || 0;
+  row(host, "Evidence references declared", String(declared), "num");
+  row(host, "Evidence attestations verified", `${verified} / ${declared}`,
+      verified ? "yes" : (declared ? "no" : "na"),
+      verified ? "Signed over {kind, sha256, statement, url} and checked offline." :
+                 "Nothing was signed — these are references, not proof.");
+  row(host, "Counted toward the evidence floor", (a.evidence_counted_kinds || []).join(", ") || "none",
+      (a.evidence_counted_kinds || []).length ? "yes" : "no",
+      "Only digest-bound artifacts count; decorative links do not.");
+  row(host, "Independent issuer", a.evidence_independently_attested ? "yes" : "no",
+      a.evidence_independently_attested ? "yes" : "na",
+      "An issuer other than the candidate's own provider key.");
+  row(host, "Permission declaration signed", a.permissions_signed ? "yes" : "no",
+      a.permissions_signed ? "yes" : "na",
+      a.permissions_signed ? "" : "Unsigned: the publisher can still deny it later.");
+  if (a.permissions_signed) {
+    row(host, "Declaration signature valid", a.permissions_signature_valid ? "yes" : "no",
+        a.permissions_signature_valid ? "yes" : "no");
+    row(host, "Bound to provider_pubkey", a.permissions_bound_to_provider_key ? "yes" : "no",
+        a.permissions_bound_to_provider_key ? "yes" : "no",
+        "Signed by the same identity the manifest publishes.");
+  }
+  const contradicting = a.runtime_violations_contradicting || [];
+  row(host, "Runtime reports verified", String(a.runtime_violations_verified || 0),
+      a.runtime_violations_verified ? "no" : "na");
+  row(host, "Declaration contradicted", contradicting.join(", ") || "no",
+      contradicting.length ? "no" : "yes",
+      contradicting.length ? "Independent observers reported behaviour the declaration denies." :
+                             "No observer has contradicted this declaration.");
+
+  /* The digest is also a self-check on this panel's canonicalizer. */
+  $("digest-row").hidden = false;
+  $("perm-digest").textContent = a.permissions_sha256 || "—";
+  const match = $("digest-match");
+  const perms = state.sent?.input?.permissions || {};
+  const full = Object.fromEntries([...PERMISSIONS, "human_approval_for_high_impact"]
+    .map((name) => [name, Boolean(perms[name])]));
+  state.digest = await sha256Hex(canonical(full));
+  if (!a.permissions_sha256) { match.textContent = ""; match.className = "pill"; }
+  else if (state.digest === a.permissions_sha256) { match.textContent = "MATCHES RECEIPT"; match.className = "pill low"; }
+  else { match.textContent = "LOCAL DIGEST DIFFERS"; match.className = "pill critical"; }
+
+  const body = $("evidence-table").querySelector("tbody");
+  clear(body);
+  const items = state.sent?.input?.evidence || [];
+  if (!items.length) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 4; td.className = "dim"; td.textContent = "No evidence submitted.";
+    tr.appendChild(td); body.appendChild(tr);
+  }
+  for (const item of items) {
+    const tr = document.createElement("tr");
+    const cells = [
+      [item.kind || "—", "mono"],
+      [item.sha256 ? "yes" : "no", item.sha256 ? "ok" : "bad"],
+      [item.attestation ? "yes" : "no", item.attestation ? "ok" : "warn"],
+      [item.attestation ? `${String(item.attestation.issuer).slice(0, 14)}…` : "—", "mono dim"],
+    ];
+    for (const [text, cls] of cells) {
+      const td = document.createElement("td");
+      td.className = cls;
+      td.textContent = text;
+      tr.appendChild(td);
+    }
+    body.appendChild(tr);
+  }
+}
+
+function renderPolicy() {
+  const body = $("policy-table").querySelector("tbody");
+  clear(body);
+  const policy = state.sent?.input?.policy || {};
+  const result = state.result || {};
+  const codes = new Set((result.findings || []).map((f) => f.code));
+  const rows = [
+    ["Minimum score", policy.minimum_score ?? 80,
+      result.score === undefined ? "" : (result.score >= (policy.minimum_score ?? 80) ? "met" : "below floor")],
+    ["Minimum evidence types", policy.minimum_evidence_count ?? 2,
+      codes.has("evidence.insufficient") ? "not met" : "met"],
+    ["Max price per call (USD)", policy.max_price_per_call_usd ?? "—",
+      codes.has("economy.unit_price_exceeds_policy") ? "exceeded" : "met"],
+    ["Max monthly cost (USD)", policy.max_monthly_cost_usd ?? "—",
+      codes.has("economy.monthly_cost_exceeds_budget") ? "exceeded" : "met"],
+    ["Require HTTPS", policy.require_https === false ? "no" : "yes",
+      codes.has("transport.https_required") || codes.has("transport.invoke_url_invalid") ? "violated" : "met"],
+    ["Require provider key", policy.require_provider_key === false ? "no" : "yes",
+      codes.has("identity.provider_key_invalid") ? "violated" : "met"],
+    ["Require Metis declaration", policy.require_metis_declaration ? "yes" : "no",
+      codes.has("verification.metis_not_declared") ? "violated" : "met"],
+    ["Require evidence digests", policy.require_evidence_digests === false ? "no" : "yes (default)", ""],
+    ["Require evidence attestation", policy.require_evidence_attestation ? "yes" : "no", ""],
+    ["Require independent attestation", policy.require_independent_attestation ? "yes" : "no", ""],
+    ["Require signed permissions", policy.require_permission_attestation ? "yes" : "no", ""],
+    ["Observers needed to contradict", policy.runtime_violation_min_reporters ?? "2 (default)", ""],
+    ["Approved publishers", (policy.approved_publishers || []).join(", ") || "any",
+      codes.has("identity.publisher_not_approved") ? "not approved" : ""],
+  ];
+  for (const [label, value, outcome] of rows) {
+    const tr = document.createElement("tr");
+    const a = document.createElement("td"); a.textContent = label;
+    const b = document.createElement("td"); b.className = "right"; b.textContent = String(value);
+    const c = document.createElement("td");
+    c.className = "right " + (/exceed|violated|not met|below|not approved/.test(outcome) ? "bad" : outcome ? "ok" : "dim");
+    c.textContent = outcome || "—";
+    tr.append(a, b, c);
+    body.appendChild(tr);
+  }
+
+  const perms = $("perm-table").querySelector("tbody");
+  clear(perms);
+  const declared = state.sent?.input?.permissions || {};
+  const contradicted = new Set(state.result?.attestations?.runtime_violations_contradicting || []);
+  for (const name of [...PERMISSIONS, "human_approval_for_high_impact"]) {
+    const tr = document.createElement("tr");
+    const a = document.createElement("td"); a.className = "mono"; a.textContent = name;
+    const b = document.createElement("td");
+    b.className = "right " + (declared[name] ? "warn" : "dim");
+    b.textContent = declared[name] ? "true" : "false";
+    const c = document.createElement("td");
+    c.className = "right " + (contradicted.has(name) ? "bad" : "dim");
+    c.textContent = contradicted.has(name) ? "contradicted" : "—";
+    tr.append(a, b, c);
+    perms.appendChild(tr);
+  }
+}
+
+function renderMetis() {
+  const host = $("metis-proof");
+  clear(host);
+  const metis = state.result?.metis;
+  if (!metis) {
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = "No verdict yet.";
+    host.appendChild(hint);
+    $("btn-poll").disabled = true;
+    return;
+  }
+  const status = String(metis.status || "—");
+  const pending = status === "pending" || status === "running";
+  row(host, "Status", status.toUpperCase(), pending ? "num" : (status === "completed" ? "yes" : "na"));
+  if (metis.reason) row(host, "Reason", String(metis.reason), "na");
+  if (metis.verification_id) row(host, "Verification id", String(metis.verification_id), "num");
+  if (metis.verify_score !== undefined && metis.verify_score !== null) {
+    row(host, "Verify score", String(metis.verify_score), "num");
+  }
+  if (metis.assessment_verified !== undefined) {
+    row(host, "Assessment verified", metis.assessment_verified ? "yes" : "no",
+        metis.assessment_verified ? "yes" : "no");
+  }
+  row(host, "Overrides the verdict", "never", "na",
+      "Metis is advisory by construction — the signed decision stands on deterministic policy.");
+  $("btn-poll").disabled = !metis.poll_url;
+  $("poll-note").textContent = metis.poll_url
+    ? (pending ? "Pending — polled automatically until it settles." : "Settled; poll again to re-read.")
+    : "This verdict carries no poll URL (Metis was not requested or is not configured).";
+  if (pending && metis.poll_url) schedulePoll(metis.poll_url);
+}
+
+function schedulePoll(url) {
+  clearTimeout(state.pollTimer);
+  state.pollTimer = setTimeout(() => pollMetis(url), 2500);
+}
+
+async function pollMetis(url) {
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    const metis = j?.result?.metis;
+    if (metis && state.result) {
+      state.result.metis = metis;
+      renderMetis();
+      updateCounters();
+    }
+  } catch (_) { /* a poll failure is not a receipt failure */ }
+}
+
+async function renderViolationStatement() {
+  const out = $("violation-statement");
+  const select = $("violation-permission");
+  if (!select.options.length) {
+    for (const name of PERMISSIONS) {
+      const option = document.createElement("option");
+      option.value = name; option.textContent = name;
+      select.appendChild(option);
+    }
+  }
+  const digest = state.result?.attestations?.permissions_sha256 || state.digest;
+  const candidate = state.sent?.input?.candidate;
+  if (!digest || !candidate) { out.textContent = "Run admission first."; return; }
+  out.textContent = canonical({
+    capability_id: candidate.capability_id,
+    permission: select.value,
+    permissions_sha256: digest,
+    product_id: candidate.product_id,
+    statement: "aimarket.violation.v1",
+  });
+}
+
+function renderAgent() {
+  const host = $("agent-proof");
+  clear(host);
+  const h = state.health;
+  if (!h) {
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = "Agent unreachable.";
+    host.appendChild(hint);
+    return;
+  }
+  row(host, "Agent", `${h.agent} · ${h.kind}`, "num");
+  row(host, "Capability", "agent.security.supply-chain.audit@v1", "num");
+  row(host, "Provider public key", h.provider_pubkey || "—", "num",
+      "The key this console re-checks every receipt against.");
+  row(host, "Metis configured", h.metis_configured ? "yes" : "no", h.metis_configured ? "yes" : "na",
+      h.metis_configured ? "" : "Advisory verification is off; verdicts are unaffected.");
+  row(host, "Metis job store", String(h.metis_job_store || "—"), "num");
+  row(host, "Safe behind a load balancer", h.metis_job_store_shared ? "yes" : "no",
+      h.metis_job_store_shared ? "yes" : "no",
+      h.metis_job_store_shared
+        ? "Any replica can answer any poll."
+        : "Per-process store: a poll routed to another replica would 404. Set METIS_JOB_DB for a shared store.");
+}
+
+function updateCounters() {
+  const r = state.result;
+  $("n-admission").textContent = r ? String((r.findings || []).length) : "";
+  const a = r?.attestations;
+  $("n-attest").textContent = a ? `${a.evidence_verified || 0}/${a.evidence_declared || 0}` : "";
+  $("n-policy").textContent = r ? String(r.score ?? "") : "";
+  $("n-runtime").textContent = r?.metis?.status ? String(r.metis.status).slice(0, 4) : "";
+  $("n-agent").textContent = state.health ? (state.health.metis_job_store_shared ? "ha" : "1×") : "";
+}
+
+async function renderAll() {
+  const r = state.result;
+  if (!r) return;
+  const t = tone(r.decision);
+  $("shield").textContent = t.mark;
+  $("shield").style.color = t.color;
+  $("shield").style.borderColor = t.color;
+  const badge = $("decision-badge");
+  badge.textContent = String(r.decision || "—").toUpperCase();
+  badge.style.background = `color-mix(in srgb, ${t.color} 18%, transparent)`;
+  badge.style.color = t.color;
+  $("subtitle").textContent = r.decision === "approve"
+    ? "Signed approve — the candidate may proceed toward listing; publishing stays an explicit operator action."
+    : r.decision === "review"
+      ? "Signed review — route to a human queue; Metis may advise but never decides."
+      : "Signed reject — fail closed. Nothing is listed.";
+  $("score").textContent = `${r.score ?? "—"}/100`;
+  const tier = $("tier");
+  clear(tier);
+  tier.append(document.createTextNode("Risk tier · "));
+  const b = document.createElement("b");
+  b.style.color = t.color;
+  b.textContent = String(r.risk_tier || "—").toUpperCase();
+  tier.appendChild(b);
+  $("m-ts").textContent = new Date().toISOString().replace("T", " ").replace(/\.\d+Z$/, " UTC");
+  $("m-cand").textContent = r.candidate?.capability_id || "—";
+  $("m-sig").textContent = state.sig ? `${state.sig.slice(0, 18)}…` : "—";
+
+  renderFindings(r.findings || []);
+  renderBars(r.findings || []);
+  await renderAttestations();
+  renderPolicy();
+  renderMetis();
+  await renderViolationStatement();
+  updateCounters();
+  $("raw").textContent = JSON.stringify(state.raw, null, 2);
+  $("btn-dl").disabled = false;
+  await verifyReceipt();
+}
+
+/* ── static demo ──────────────────────────────────────────────────────────────
+   Published next to the landing page, this console has no agent behind it. It
+   then loads receipts that a real agent signed, and re-checks those signatures
+   in the browser exactly as it would live — the one thing a mock-up cannot do. */
+async function loadDemoBundle() {
+  const r = await fetch("receipts.json", { cache: "no-cache" });
+  if (!r.ok) throw new Error(`no demo bundle (${r.status})`);
+  const bundle = await r.json();
+  if (!bundle || !Array.isArray(bundle.scenarios) || !bundle.scenarios.length) {
+    throw new Error("demo bundle is empty");
+  }
+  return bundle;
+}
+
+function enterDemoMode(bundle) {
+  state.demo = bundle;
+  state.health = { ok: true, ...(bundle.agent || {}), provider_pubkey: bundle.provider_pubkey };
+  $("health-dot").className = "dot ok";
+  $("health-label").textContent = "static demo · signed receipts";
+  const note = $("demo");
+  note.hidden = false;
+  clear(note);
+  const strong = document.createElement("b");
+  strong.textContent = "Static demo. ";
+  note.appendChild(strong);
+  note.appendChild(document.createTextNode(
+    "There is no agent behind this page, so nothing is submitted. The receipts below were signed by a "
+    + "real THEMIS run and their signatures are re-checked in your browser against the bundled provider "
+    + "key. To evaluate your own dossier, run the agent and open its console: "
+  ));
+  const code = document.createElement("code");
+  code.textContent = "uv run python agent.py → http://127.0.0.1:8080/ui/";
+  note.appendChild(code);
+
+  $("btn-run").hidden = true;
+  $("btn-run2").hidden = true;
+  const buttons = { "btn-safe": "safe", "btn-unsafe": "unsafe", "btn-attested": "attested" };
+  for (const [id, wanted] of Object.entries(buttons)) {
+    const button = $(id);
+    const scenario = bundle.scenarios.find((s) => s.id === wanted);
+    if (!scenario) { button.hidden = true; continue; }
+    button.textContent = scenario.label || wanted;
+    button.onclick = () => showScenario(scenario);
+  }
+  renderAgent();
+  showScenario(bundle.scenarios[0]);
+}
+
+async function showScenario(scenario) {
+  $("err").hidden = true;
+  state.raw = JSON.parse(scenario.receipt_text);
+  state.result = state.raw.result;
+  state.sent = JSON.parse(scenario.submitted_text);
+  state.sig = scenario.signature;
+  try {
+    state.literalResult = parseKeepNumbers(scenario.receipt_text).result;
+    state.literalSent = parseKeepNumbers(scenario.submitted_text);
+  } catch (_) {
+    state.literalResult = null;
+    state.literalSent = null;
+  }
+  $("payload").value = JSON.stringify(state.sent, null, 2);
+  $("payload").readOnly = true;
+  await renderAll();
+}
+
+/* ── actions ── */
+function showError(message) {
+  const box = $("err");
+  box.hidden = false;
+  box.textContent = message;
+}
+
+async function loadExample(name) {
+  const r = await fetch(`/examples/${name}`);
+  if (!r.ok) throw new Error(`example ${name} unavailable (${r.status})`);
+  $("payload").value = JSON.stringify(await r.json(), null, 2);
+}
+
+async function run() {
+  $("err").hidden = true;
+  clearTimeout(state.pollTimer);
+  let body;
+  try {
+    body = JSON.parse($("payload").value);
+  } catch (e) {
+    showError(`Invalid JSON: ${e.message}`);
+    setView("dossier");
+    return;
+  }
+  for (const id of ["btn-run", "btn-run2"]) $(id).disabled = true;
+  try {
+    const r = await fetch("/invoke", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const sig = r.headers.get("X-Provider-Signature");
+    const text = await r.text();
+    const j = JSON.parse(text);
+    if (!r.ok) throw new Error(j.detail || `HTTP ${r.status}`);
+    state.result = j.result;
+    state.raw = j;
+    state.sig = sig;
+    state.sent = body;
+    // Kept alongside the parsed copies purely so the signature can be re-checked
+    // against the bytes that were actually signed.
+    try {
+      state.literalResult = parseKeepNumbers(text).result;
+      state.literalSent = parseKeepNumbers($("payload").value);
+    } catch (_) {
+      state.literalResult = null;
+      state.literalSent = null;
+    }
+    await renderAll();
+  } catch (e) {
+    showError(String(e.message || e));
+  } finally {
+    for (const id of ["btn-run", "btn-run2"]) $(id).disabled = false;
+  }
+}
+
+function download() {
+  if (!state.raw) return;
+  const blob = new Blob(
+    [JSON.stringify({ receipt: state.raw, signature: state.sig, submitted: state.sent }, null, 2)],
+    { type: "application/json" }
+  );
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `themis-admission-${state.result?.decision || "receipt"}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function copyText(text, button) {
+  try { await navigator.clipboard.writeText(text); } catch { return; }
+  const old = button.textContent;
+  button.textContent = "COPIED";
+  setTimeout(() => { button.textContent = old; }, 1400);
+}
+
+function setView(name) {
+  for (const button of $("nav").querySelectorAll("button")) {
+    const on = button.dataset.view === name;
+    if (on) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  }
+  for (const section of document.querySelectorAll(".view")) {
+    section.hidden = section.id !== `view-${name}`;
+  }
+  const [title, lede] = VIEWS[name] || VIEWS.admission;
+  $("view-title").textContent = title;
+  $("view-lede").textContent = lede;
+  location.hash = name;
+}
+
+async function checkHealth() {
+  try {
+    const r = await fetch("/health");
+    state.health = await r.json();
+    $("health-dot").className = "dot " + (state.health.ok ? "ok" : "bad");
+    $("health-label").textContent = state.health.ok
+      ? `healthy · ${state.health.metis_job_store_shared ? "shared" : "single-replica"} job store`
+      : "agent unhealthy";
+  } catch {
+    state.health = null;
+    $("health-dot").className = "dot bad";
+    $("health-label").textContent = "agent unreachable";
+  }
+  renderAgent();
+  updateCounters();
+}
+
+$("nav").addEventListener("click", (e) => {
+  const button = e.target.closest("button[data-view]");
+  if (button) setView(button.dataset.view);
+});
+$("btn-safe").onclick = () => loadExample("safe_candidate.json").catch((e) => showError(e.message));
+$("btn-unsafe").onclick = () => loadExample("unsafe_candidate.json").catch((e) => showError(e.message));
+$("btn-attested").onclick = () => loadExample("attested_candidate.json").catch((e) => showError(e.message));
+$("btn-run").onclick = run;
+$("btn-run2").onclick = run;
+$("btn-dl").onclick = download;
+$("btn-poll").onclick = () => {
+  const url = state.result?.metis?.poll_url;
+  if (url) pollMetis(url);
+};
+$("btn-copy-digest").onclick = (e) => copyText($("perm-digest").textContent, e.currentTarget);
+$("btn-copy-statement").onclick = (e) => copyText($("violation-statement").textContent, e.currentTarget);
+$("violation-permission").onchange = renderViolationStatement;
+$("payload").addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); run(); }
+});
+addEventListener("hashchange", () => {
+  const name = location.hash.replace("#", "");
+  if (VIEWS[name]) setView(name);
+});
+
+/* Opened from disk, `fetch("/examples/…")` cannot resolve a root-relative URL and
+   the browser reports "Failed to parse URL" — true, and useless. This console is
+   a client of the running agent, so say that instead. */
+function servedByAgent() {
+  return location.protocol === "http:" || location.protocol === "https:";
+}
+
+function showOfflineNotice() {
+  const port = 8080;
+  showError(
+    "This console is a client of the running agent, and it was opened as a local file "
+    + `(${location.protocol}) — so it cannot reach /health, /examples or /invoke. `
+    + `Start the agent and open it from there: uv run python agent.py, then http://127.0.0.1:${port}/ui/`
+  );
+  for (const id of ["btn-safe", "btn-unsafe", "btn-attested", "btn-run", "btn-run2", "btn-dl", "btn-poll"]) {
+    const el = $(id);
+    if (el) el.disabled = true;
+  }
+  $("health-dot").className = "dot bad";
+  $("health-label").textContent = "not served by the agent";
+  $("payload").value = "";
+  $("payload").placeholder = "Serve this console from the agent to load a dossier.";
+}
+
+(async () => {
+  setView(VIEWS[location.hash.replace("#", "")] ? location.hash.replace("#", "") : "admission");
+  if (!servedByAgent()) { showOfflineNotice(); return; }
+
+  const live = await fetch("/health").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  if (!live) {
+    // Not served by an agent, but perhaps published beside a receipt bundle.
+    try {
+      enterDemoMode(await loadDemoBundle());
+      return;
+    } catch (_) {
+      await checkHealth();
+      showError(
+        "No agent answered /health and no demo bundle sits next to this page. "
+        + "Start the agent and open its console: uv run python agent.py, then http://127.0.0.1:8080/ui/"
+      );
+      return;
+    }
+  }
+  state.health = live;
+  $("health-dot").className = "dot " + (live.ok ? "ok" : "bad");
+  $("health-label").textContent = live.ok
+    ? `healthy · ${live.metis_job_store_shared ? "shared" : "single-replica"} job store`
+    : "agent unhealthy";
+  renderAgent();
+  updateCounters();
+
+  const demo = new URLSearchParams(location.search).get("demo");
+  try {
+    const example = demo === "unsafe" || demo === "reject" ? "unsafe_candidate.json"
+      : demo === "attested" ? "attested_candidate.json" : "safe_candidate.json";
+    await loadExample(example);
+  } catch (e) {
+    showError(String(e.message || e));
+  }
+  // An operator console must not submit anything on its own; ?demo= is the
+  // deliberate exception used for gallery screenshots.
+  if (demo) await run();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+{
+  "input": {
+    "candidate": {
+      "product_id": "invoice-reader",
+      "capability_id": "invoice.read@v1",
+      "name": "Invoice Reader (attested)",
+      "description": "Extracts structured fields from an invoice",
+      "invoke_url": "https://agents.example.com/invoice/invoke",
+      "publisher_id": "trusted-vendor",
+      "provider_pubkey": "oH6ij24Q9p9XxE0/T08fmtJSYJ8jtRIMp9PRPCpMW84=",
+      "price_per_call_usd": 0.02,
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "document_id"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "total",
+          "currency"
+        ],
+        "additionalProperties": false
+      },
+      "verification": {
+        "metis": true
+      }
+    },
+    "permissions": {
+      "read_personal_data": true,
+      "human_approval_for_high_impact": true
+    },
+    "evidence": [
+      {
+        "kind": "privacy_policy",
+        "url": "https://agents.example.com/privacy",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "attestation": {
+          "issuer": "oH6ij24Q9p9XxE0/T08fmtJSYJ8jtRIMp9PRPCpMW84=",
+          "signature": "+AxXhKc7hL4XMg6qbAVec7jmz5P56S6atr9DqB76+MYUrBvc4B4MGpx+RetX9Zxt+gYjfPt0oo5xjMQgaSyoBg=="
+        }
+      },
+      {
+        "kind": "independent_audit",
+        "url": "https://audit.example.com/report.pdf",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "attestation": {
+          "issuer": "BmhMQub8JDRqIdTsoalR3/oYFiZg2huwwf9DmCPh46w=",
+          "signature": "SkBo1Mn10t6SYDWgkIj85tOUiXYEg/opHJF1nK1h5w8OmGXFXvv2g4zFmckM7NKx7n0tAkOJYYym7qhasDdZAw=="
+        }
+      }
+    ],
+    "usage": {
+      "monthly_invocations": 1000,
+      "data_classification": "confidential"
+    },
+    "policy": {
+      "max_price_per_call_usd": 0.05,
+      "max_monthly_cost_usd": 100,
+      "minimum_score": 80,
+      "minimum_evidence_count": 2,
+      "require_https": true,
+      "require_provider_key": true,
+      "require_metis_declaration": true,
+      "approved_publishers": [
+        "trusted-vendor"
+      ],
+      "require_evidence_attestation": true,
+      "require_independent_attestation": true,
+      "require_permission_attestation": true
+    },
+    "request_metis": false,
+    "permissions_attestation": {
+      "issuer": "oH6ij24Q9p9XxE0/T08fmtJSYJ8jtRIMp9PRPCpMW84=",
+      "signature": "u/DrkzqcBSjUh9C3jnjS8gU0g0/EME6qYezB2PWwKb0iJYXmBe71hYEv9ysTGbPu14P55KTIoBv8W1nXaJ87Aw=="
+    }
+  },
+  "product_id": "themis",
+  "capability_id": "agent.security.supply-chain.audit@v1"
+}

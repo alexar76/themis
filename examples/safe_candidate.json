@@ -1,0 +1,58 @@
+{
+  "input": {
+    "candidate": {
+      "product_id": "invoice-reader",
+      "capability_id": "invoice.read@v1",
+      "name": "Invoice Reader",
+      "description": "Extracts structured fields from an invoice",
+      "invoke_url": "https://agents.example.com/invoice/invoke",
+      "publisher_id": "trusted-vendor",
+      "provider_pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      "price_per_call_usd": 0.02,
+      "input_schema": {
+        "type": "object",
+        "properties": {"document_id": {"type": "string", "maxLength": 128}},
+        "required": ["document_id"],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {"total": {"type": "number"}, "currency": {"type": "string"}},
+        "required": ["total", "currency"],
+        "additionalProperties": false
+      },
+      "verification": {"metis": true}
+    },
+    "permissions": {
+      "read_personal_data": true,
+      "human_approval_for_high_impact": true
+    },
+    "evidence": [
+      {
+        "kind": "privacy_policy",
+        "url": "https://agents.example.com/privacy",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "kind": "independent_audit",
+        "url": "https://audit.example.com/report.pdf",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "usage": {"monthly_invocations": 1000, "data_classification": "confidential"},
+    "policy": {
+      "max_price_per_call_usd": 0.05,
+      "max_monthly_cost_usd": 100,
+      "minimum_score": 80,
+      "minimum_evidence_count": 2,
+      "require_https": true,
+      "require_provider_key": true,
+      "require_metis_declaration": true,
+      "approved_publishers": ["trusted-vendor"]
+    },
+    "request_metis": false
+  },
+  "product_id": "themis",
+  "capability_id": "agent.security.supply-chain.audit@v1"
+}
+

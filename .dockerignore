@@ -1,0 +1,12 @@
+.aimarket
+.coverage
+.env
+.git
+.github
+.pytest_cache
+.venv
+__pycache__
+*.pyc
+dist
+tests
+
