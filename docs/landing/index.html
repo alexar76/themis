@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>THEMIS — publish-time admission gate</title>
+<meta name="description" content="THEMIS decides whether a third-party AI agent may enter the AIMarket catalogue: signed approve / review / reject. Not Metis. Not WARDEN. Rebuild it via the five-language create-aimarket-agent tutorial." />
+<meta property="og:title" content="THEMIS — admission before the catalogue" />
+<meta property="og:description" content="Signed procurement gate for AI-agent supply chains. Reference agent + mini-course." />
+<meta property="og:url" content="https://alexar76.github.io/themis/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0d12;
+    --ink: #eef3f7;
+    --muted: #8b98a8;
+    --bronze: #c9a46a;
+    --teal: #66f7c5;
+    --head: "Syne", system-ui, sans-serif;
+    --body: "IBM Plex Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink); font-family: var(--body);
+    background:
+      radial-gradient(55vw 45vw at 18% 12%, rgba(201,164,106,0.16), transparent 55%),
+      radial-gradient(50vw 40vw at 88% 78%, rgba(102,247,197,0.10), transparent 50%),
+      linear-gradient(165deg, #07090d, #0c1118 52%, #0a0d12);
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 28px 22px 64px; }
+  nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .brand { font-family: var(--head); letter-spacing: 0.18em; font-weight: 800; text-decoration: none; color: var(--ink); }
+  .links a { color: var(--muted); text-decoration: none; margin-left: 14px; font-size: 14px; }
+  .links a:hover { color: var(--teal); }
+  .hero { padding: 12vh 0 4vh; }
+  h1 {
+    font-family: var(--head); font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 0.96;
+    margin: 0 0 18px; letter-spacing: -0.02em;
+  }
+  .lead { max-width: 38rem; color: var(--muted); font-size: 1.12rem; margin: 0 0 26px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 12px 18px; border-radius: 10px; text-decoration: none; font-weight: 600;
+  }
+  .btn-primary { background: var(--bronze); color: #120e08; }
+  .btn-ghost { border: 1px solid rgba(238,243,247,0.22); color: var(--ink); }
+  pre {
+    margin-top: 28px; padding: 16px 18px; border-radius: 12px; overflow-x: auto;
+    border: 1px solid rgba(201,164,106,0.32); background: rgba(8,12,18,0.78);
+    font-family: var(--mono); font-size: 0.9rem; color: var(--teal);
+  }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 44px; }
+  .card {
+    border: 1px solid rgba(238,243,247,0.12); border-radius: 14px; padding: 18px;
+    background: rgba(255,255,255,0.03);
+  }
+  .card h2 { font-family: var(--head); font-size: 1.05rem; margin: 0 0 8px; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .card a { color: var(--bronze); }
+  .course {
+    margin-top: 40px; padding: 22px; border-radius: 16px;
+    border: 1px solid rgba(102,247,197,0.28); background: rgba(102,247,197,0.05);
+  }
+  .course h2 { font-family: var(--head); margin: 0 0 10px; font-size: 1.35rem; }
+  .course p { margin: 0 0 14px; color: var(--muted); }
+  .langs a { color: var(--teal); margin-right: 12px; font-size: 14px; text-decoration: none; }
+  .langs a:hover { text-decoration: underline; }
+  footer { margin-top: 56px; color: var(--muted); font-size: 13px; }
+  footer a { color: var(--teal); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="https://alexar76.github.io/themis/">THEMIS</a>
+      <div class="links">
+        <a href="https://github.com/alexar76/themis">Source</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.en.md">Tutorial</a>
+        <a href="https://magic-ai-factory.com/monitor/">Alien Monitor</a>
+      </div>
+    </nav>
+    <section class="hero">
+      <h1>Admit. Or don’t.<br>Before the catalogue.</h1>
+      <p class="lead">
+        THEMIS (Θέμις) is AIMarket’s <strong style="color:var(--ink)">publish-time admission gate</strong>:
+        a signed <code style="color:var(--bronze)">approve</code> /
+        <code style="color:var(--bronze)">review</code> /
+        <code style="color:var(--bronze)">reject</code> from a bounded dossier.
+        Not Metis (cognition). Not WARDEN (invoke-time firewall).
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/alexar76/themis#quick-start">Run the agent</a>
+        <a class="btn btn-ghost" href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.en.md">Rebuild from the mini-course</a>
+      </div>
+      <pre>uvx create-aimarket-agent themis --kind tool --metis</pre>
+    </section>
+    <div class="grid">
+      <article class="card">
+        <h2>Deterministic first</h2>
+        <p>Policy engine decides immediately. Metis may advise asynchronously — it never overrides the signed verdict.</p>
+      </article>
+      <article class="card">
+        <h2>Evidence, not SSRF</h2>
+        <p>Candidate URLs and evidence links are parsed, never fetched. Unknown fields and oversized bodies fail closed.</p>
+      </article>
+      <article class="card">
+        <h2>Hub overlay</h2>
+        <p>Optional Hub modes <code>off</code> / <code>advisory</code> / <code>enforce</code>. Listing already needs token, stake, signatures — not open signup.</p>
+      </article>
+    </div>
+    <section class="course">
+      <h2>Mini-course: build this agent</h2>
+      <p>
+        THEMIS is the finished reference repository for the five-language
+        <a href="https://github.com/alexar76/create-aimarket-agent">create-aimarket-agent</a> tutorial.
+        Twelve steps: scaffold → dossier → findings → lazy Metis → Ed25519 → tests → Docker → deliberate publish.
+      </p>
+      <div class="langs">
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.en.md">EN</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.ru.md">RU</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.es.md">ES</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.fr.md">FR</a>
+        <a href="https://github.com/alexar76/create-aimarket-agent/blob/main/docs/tutorials/themis.zh.md">ZH</a>
+      </div>
+    </section>
+    <footer>
+      Part of <a href="https://modeldev.modelmarket.dev/">AIMarket ecosystem</a> ·
+      capability <code>agent.security.supply-chain.audit@v1</code> ·
+      <a href="https://alexar76.github.io/themis/">alexar76.github.io/themis</a>
+    </footer>
+  </div>
+</body>
+</html>

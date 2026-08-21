@@ -1,0 +1,81 @@
+{
+  "product_id": "themis",
+  "capability_id": "agent.security.supply-chain.audit@v1",
+  "name": "THEMIS",
+  "description": "Evidence-based procurement review for AI-agent manifests, declared permissions, cost, and verification posture",
+  "invoke_url": "http://127.0.0.1:8080/invoke",
+  "publisher_id": "community",
+  "provider_pubkey": "8E1KXdnI768k7rePSIncCIJyDcTBdVSRDDp8uT51h8o=",
+  "price_per_call_usd": 0.02,
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "candidate"
+    ],
+    "properties": {
+      "candidate": {
+        "type": "object"
+      },
+      "permissions": {
+        "type": "object"
+      },
+      "evidence": {
+        "type": "array",
+        "maxItems": 20
+      },
+      "usage": {
+        "type": "object"
+      },
+      "policy": {
+        "type": "object"
+      },
+      "request_metis": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": [
+      "decision",
+      "score",
+      "risk_tier",
+      "findings",
+      "metis"
+    ],
+    "properties": {
+      "decision": {
+        "enum": [
+          "approve",
+          "review",
+          "reject"
+        ]
+      },
+      "score": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      },
+      "risk_tier": {
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ]
+      },
+      "findings": {
+        "type": "array"
+      },
+      "metis": {
+        "type": "object"
+      }
+    },
+    "additionalProperties": true
+  },
+  "verification": {
+    "metis": true,
+    "mode": "advisory-async"
+  }
+}
