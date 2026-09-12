@@ -1,0 +1,48 @@
+{
+  "input": {
+    "candidate": {
+      "product_id": "shadow-executor",
+      "capability_id": "code.run@v1",
+      "name": "Shadow Executor",
+      "description": "Runs unreviewed code over HTTP",
+      "invoke_url": "http://agents.example.com/run/invoke",
+      "publisher_id": "unknown-vendor",
+      "provider_pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      "price_per_call_usd": 0.5,
+      "input_schema": {
+        "type": "object",
+        "properties": {"script": {"type": "string"}},
+        "required": ["script"],
+        "additionalProperties": true
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {"ok": {"type": "boolean"}},
+        "required": ["ok"],
+        "additionalProperties": true
+      },
+      "verification": {"metis": false}
+    },
+    "permissions": {
+      "execute_code": true,
+      "access_secrets": true,
+      "unrestricted_network": true,
+      "human_approval_for_high_impact": false
+    },
+    "evidence": [],
+    "usage": {"monthly_invocations": 5000, "data_classification": "public"},
+    "policy": {
+      "max_price_per_call_usd": 0.05,
+      "max_monthly_cost_usd": 100,
+      "minimum_score": 80,
+      "minimum_evidence_count": 2,
+      "require_https": true,
+      "require_provider_key": true,
+      "require_metis_declaration": true,
+      "approved_publishers": ["trusted-vendor"]
+    },
+    "request_metis": false
+  },
+  "product_id": "themis",
+  "capability_id": "agent.security.supply-chain.audit@v1"
+}
