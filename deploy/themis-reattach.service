@@ -1,0 +1,16 @@
+[Unit]
+Description=Keep the THEMIS auditor attached to the live modelmarket-hub netns
+Documentation=https://themis.modelmarket.dev/
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStart=/root/claudecode/aicom/themis/deploy/themis-reattach-watch.sh
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
