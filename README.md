@@ -202,7 +202,7 @@ allowlisted reason rather than leaking infrastructure details.
 
 Policy `themis-mcp/2`: **reject** for block-tier patterns, decoy credential access/transmission, persistence or an extra recipient observed in the sandbox; **review** for provenance/publisher/dependency changes, lookalikes, network attempts (including tool calls), advisory patterns, classifier flags or recent definition changes; **unknown** for missing, incomplete, stale or mismatched evidence. **Approve** requires all mandatory checks to be complete and bound to the observed subject. Package build attestation presence is not verification: a package needs verified artifact evidence before approval.
 
-THEMIS verifies the exact signed HISTOR `/check` answer and its query binding. Set `THEMIS_HISTOR_ISSUER_DID` to pin the issuer; otherwise key discovery uses the configured HISTOR HTTPS origin. No unsigned second record enters the decision. Invalid signatures or unavailable evidence return 503. A stale signed answer yields unknown. The decision carries all evidence used and is cached for ten minutes. See [observer and evidence limitations](../histor/docs/behaviour-v3.md).
+THEMIS verifies the exact signed HISTOR `/check` answer and its query binding. Set `THEMIS_HISTOR_ISSUER_DID` to pin the issuer; otherwise key discovery uses the configured HISTOR HTTPS origin. No unsigned second record enters the decision. Invalid signatures or unavailable evidence return 503. A stale signed answer yields unknown. The decision carries all evidence used and is cached for ten minutes. See [observer and evidence limitations](https://github.com/alexar76/histor/blob/main/docs/behaviour-v3.md).
 
 ## Security boundary
 

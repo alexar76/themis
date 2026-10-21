@@ -35,7 +35,7 @@
 # ordering in a compose unit, before living in `enforce`.
 set -euo pipefail
 
-HOST="${THEMIS_PROD_HOST:-my-vps}"
+HOST="${THEMIS_PROD_HOST:-factory-vps}"
 REMOTE="${THEMIS_PROD_PATH:-/root/claudecode/aicom}"
 MODE="${1:-advisory}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
