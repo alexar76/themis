@@ -1,0 +1,13 @@
+[Unit]
+Description=Keep THEMIS reachable inside the live modelmarket-hub network namespace (factory-vps)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/lib/themis-reattach/themis-reattach-factory-watch.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

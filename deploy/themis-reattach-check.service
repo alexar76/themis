@@ -1,0 +1,8 @@
+[Unit]
+Description=Check THEMIS is reachable from modelmarket-hub and repair it if not
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/lib/themis-reattach/themis-reattach.py
